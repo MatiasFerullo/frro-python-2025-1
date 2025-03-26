@@ -67,6 +67,7 @@ def maximo_recursivo(*args) -> float:
         return args[0]
 
     return max(args[0], maximo_recursivo(args[1:])
+    ##
 
 # NO MODIFICAR - INICIO
 assert maximo_recursivo(1, 10, 5, -5) == 10
