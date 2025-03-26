@@ -66,7 +66,7 @@ def maximo_recursivo(*args) -> float:
     if len(args) == 1:
         return args[0]
 
-    return max(args[0], maximo_recursivo(args[1:])
+    return max(args[0], maximo_recursivo(*args[1:]))
     ##
 
 # NO MODIFICAR - INICIO
