@@ -4,8 +4,7 @@
 def maximo_basico(a: float, b: float) -> float:
     if (a > b):
         return a
-    else:
-        return b
+    return b
 
 
 # NO MODIFICAR - INICIO
