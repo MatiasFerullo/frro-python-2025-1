@@ -34,12 +34,17 @@ assert multiplicar_basico(range(1, 20)) == 121_645_100_408_832_000
 
 from functools import reduce
 
+def multiplicar(x:float,y:float)-> float:
+    return x*y
+
 
 def multiplicar_reduce(numeros: Iterable[float]) -> float:
     """CHALLENGE OPCIONAL - Re-escribir utilizando reduce.
     Referencia: https://docs.python.org/3.8/library/functools.html#functools.reduce
     """
-    pass # Completar
+    if len(numeros)>0:
+        return reduce(multiplicar, numeros)
+    return 0
 
 
 # NO MODIFICAR - INICIO
