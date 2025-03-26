@@ -47,7 +47,7 @@ def maximo_arbitrario(*args) -> float:
     """Re-escribir para que tome una cantidad arbitraria de parámetros.
     Referencia: https://docs.python.org/3/tutorial/controlflow.html#arbitrary-argument-lists
     """
-    pass # Completar
+    return max(*args)
 
 
 # NO MODIFICAR - INICIO
