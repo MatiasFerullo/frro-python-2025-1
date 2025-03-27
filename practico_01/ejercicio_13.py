@@ -51,7 +51,9 @@ def generar_pares_generator(initial: int = 0) -> Iterator[int]:
     """Re-Escribir utilizando Generadores
     Referencia: https://docs.python.org/3/howto/functional.html?highlight=generator#generators
     """
-    pass # Completar
+    while True:
+        yield initial
+        initial += 2
 
 
 # NO MODIFICAR - INICIO
@@ -67,7 +69,12 @@ assert next(generador_pares) == 4
 
 def generar_pares_generator_send(initial: int = 0) -> Iterator[int]:
     """CHALLENGE OPCIONAL: Re-Escribir utilizando send para saltear numeros"""
-    pass # Completar
+    while True:
+        x = yield initial
+        if x is not None:
+            initial = x #Si se detecta un send, setear initial
+        else:
+            initial += 2 #Si no, continuar como se esperaria
 
 
 # NO MODIFICAR - INICIO
