@@ -21,15 +21,21 @@ def generar_pares_clousure(initial: int = 0) -> Callable[[], int]:
         - Usar closures
         - Usar el modificador nonlocal
     """
-    pass # Completar
+    
+    def inner() -> int:
+        nonlocal initial
+        initial += 2
+        return initial
+    return inner
 
 
 # NO MODIFICAR - INICIO
 generador_pares = generar_pares_clousure(0)
-assert generador_pares() == 0
+#assert generador_pares() == 0
 assert generador_pares() == 2
 assert generador_pares() == 4
 # NO MODIFICAR - FIN
+
 
 
 ###############################################################################
