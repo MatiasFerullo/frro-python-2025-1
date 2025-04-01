@@ -7,7 +7,14 @@ def numeros_al_final_basico(lista: List[Union[float, str]]) -> List[Union[float,
     """Toma una lista de enteros y strings y devuelve una lista con todos los
     elementos numéricos al final.
     """
-    pass # Completar
+    aux = []
+    for x in lista:
+        if type(x) == str:
+            aux.append(x)
+    for x in lista:
+        if type(x) != str:
+            aux.append(x)
+    return aux
 
 
 # NO MODIFICAR - INICIO
@@ -20,7 +27,7 @@ assert numeros_al_final_basico([3, "a", 1, "b", 10, "j"]) == ["a", "b", "j", 3, 
 
 def numeros_al_final_comprension(lista: List[Union[float, str]]) -> List[Union[float, str]]:
     """Re-escribir utilizando comprensión de listas."""
-    pass # Completar
+    return [x for x in lista if type(x) == str] + [x for x in lista if type(x) != str]
 
 
 # NO MODIFICAR - INICIO
@@ -35,7 +42,7 @@ def numeros_al_final_sorted(lista: List[Union[float, str]]) -> List[Union[float,
     """Re-escribir utilizando la función sorted con una custom key.
     Referencia: https://docs.python.org/3/library/functions.html#sorted
     """
-    pass # Completar
+    return sorted(lista, key=lambda x: type(x)!=str)
 
 
 # NO MODIFICAR - INICIO
@@ -50,7 +57,7 @@ def numeros_al_final_filter(lista: List[Union[float, str]]) -> List[Union[float,
     """CHALLENGE OPCIONAL - Re-escribir utilizando la función filter.
     Referencia: https://docs.python.org/3/library/functions.html#filter
     """
-    pass # Completar
+    return list(filter(lambda x: type(x) == str, lista)) + list(filter(lambda x: type(x) != str, lista))
 
 
 # NO MODIFICAR - INICIO
@@ -64,8 +71,11 @@ if __name__ == "__main__":
 
 def numeros_al_final_recursivo(lista: List[Union[float, str]]) -> List[Union[float, str]]:
     """CHALLENGE OPCIONAL - Re-escribir de forma recursiva."""
-    pass # Completar
-
+    if len(lista) == 1 or not any(type(x) == str for x in lista):
+        return lista
+    if type(lista[0]) == str:
+        return [lista[0]] + numeros_al_final_recursivo(lista[1:])
+    return numeros_al_final_recursivo(lista[1:] + [lista[0]])
 
 # NO MODIFICAR - INICIO
 if __name__ == "__main__":
