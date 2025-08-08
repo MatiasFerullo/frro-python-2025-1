@@ -2,10 +2,12 @@ import os
 
 from flask import Flask
 from flaskr.routes.auth import auth_bp
+from flaskr.routes.index import index_bp
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    app.register_blueprint(index_bp)
     app.register_blueprint(auth_bp)
     app.config.from_mapping(
         SECRET_KEY='dev',
@@ -24,10 +26,5 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
-    # a simple page that says hello
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
 
     return app
