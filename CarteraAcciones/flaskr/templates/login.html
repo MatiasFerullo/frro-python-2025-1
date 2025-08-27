@@ -16,26 +16,26 @@
     />
   </head>
   <body class="bg-[#fbfbfb] select-none">
-    <div class="w-full flex justify-center">
+    <div class="flex w-full justify-center">
       <div
-        class="w-full max-w-4xl bg-white flex-col pt-10 px-4 flex items-center h-screen border-x-1 border-slate-200"
+        class="flex h-screen w-full max-w-4xl flex-col items-center border-x-1 border-slate-200 bg-white px-4 pt-10"
       >
         <article
-          class="rounded-sm outline-1 outline-slate-200 w-full max-w-xl bg-white"
+          class="w-full max-w-xl rounded-sm bg-white outline-1 outline-slate-200"
         >
           <h1
-            class="text-2xl px-4 py-2 font-semibold text-slate-700 border-b-1 border-slate-200"
+            class="border-b-1 border-slate-200 px-4 py-2 text-2xl font-semibold text-slate-700"
           >
             Iniciar sesión
           </h1>
           <footer class="p-4">
             <form action="/auth/login" method="post">
-              <p class="flex flex-col mb-4">
+              <p class="mb-4 flex flex-col">
                 <label class="mb-1 text-slate-500" for="username"
                   >Nombre de usuario</label
                 >
                 <input
-                  class="transition px-3 py-2 outline-1 outline-slate-200 rounded-sm focus:outline-slate-300 placeholder:text-slate-500"
+                  class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
                   type="text"
                   id="username"
                   name="username"
@@ -43,12 +43,12 @@
                   autocomplete="username"
                 />
               </p>
-              <p class="flex flex-col mb-4">
+              <p class="mb-4 flex flex-col">
                 <label class="mb-1 text-slate-500" for="password"
                   >Contraseña</label
                 >
                 <input
-                  class="transition px-3 py-2 outline-1 outline-slate-200 rounded-sm focus:outline-slate-300 placeholder:text-slate-500"
+                  class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
                   type="password"
                   id="password"
                   name="password"
@@ -56,7 +56,7 @@
                 />
               </p>
               <button
-                class="bg-slate-600 active:bg-slate-700 hover:bg-slate-700 cursor-pointer px-3 py-2 mt-4 rounded-sm w-full text-white transition active:scale-90"
+                class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
                 type="submit"
               >
                 Iniciar sesión
@@ -64,9 +64,9 @@
             </form>
           </footer>
         </article>
-        <p class="text-slate-500 mt-4">
+        <p class="mt-4 text-slate-500">
           <span>No tienes una cuenta?</span>&nbsp;<a
-            class="underline text-sky-800"
+            class="text-sky-800 underline"
             href="/auth/register"
             >Regístrate</a
           >

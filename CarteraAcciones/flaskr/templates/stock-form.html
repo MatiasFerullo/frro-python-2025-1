@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Cartera de Acciones</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      media="screen"
+      href="{{ url_for('static', filename='css/output.css') }}"
+    />
+    <style>
+      @view-transition {
+        navigation: auto; /**/
+      }
+    </style>
+  </head>
+  <body class="overflow-x-hidden bg-[#fbfbfb] select-none">
+    <div class="flex min-h-screen w-full flex-col items-center">
+      <div
+        class="w-full flex-1 items-center border-slate-200 bg-white lg:max-w-4xl lg:border-x-1"
+      >
+        <div
+          class="flex flex-row items-center gap-2 bg-white p-4 lg:px-6 lg:pt-6"
+          style="view-transition-name: stock-form-bar"
+        >
+          <a
+            class="flex cursor-pointer rounded-sm p-1 text-gray-400 transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
+            href="/portfolio"
+            style="view-transition-name: stock-form-back"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M15 6l-6 6l6 6" />
+            </svg>
+          </a>
+          <h1
+            class="text-xl leading-none sm:text-2xl"
+            style="view-transition-name: stock-form-title"
+          >
+            Añadir acción
+          </h1>
+        </div>
+        <div
+          class="px-4 pb-4 lg:px-6 lg:pb-6"
+          style="view-transition-name: stock-form-content"
+        >
+          <form class="max-h-96 overflow-y-auto px-[2px]">
+            <p class="mb-4 flex flex-col">
+              <label class="mb-1 text-slate-500" for="company"
+                >Nombre de la empresa</label
+              >
+              <input
+                class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                type="text"
+                id="company"
+                name="company"
+                required
+              />
+            </p>
+            <p class="mb-4 flex flex-col">
+              <label class="mb-1 text-slate-500" for="amount">Cantidad</label>
+              <input
+                class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                type="number"
+                id="amount"
+                name="amount"
+                required
+              />
+            </p>
+            <p class="mb-4 flex flex-col">
+              <label class="mb-1 text-slate-500" for="date">Fecha</label>
+              <input
+                class="w-full rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                type="date"
+                id="date"
+                name="date"
+                required
+              />
+            </p>
+            <button
+              class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
+              type="submit"
+            >
+              Guardar
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

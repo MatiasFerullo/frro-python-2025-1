@@ -30,3 +30,10 @@ def chart():
     if (loggedIn):
         return render_template('chart.html')
     return redirect(url_for('index.index'))
+
+@index_bp.route('/stock-form')
+def stockForm():
+    loggedIn = True
+    if (loggedIn):
+        return render_template('stock-form.html')
+    return redirect(url_for('index.index'))
