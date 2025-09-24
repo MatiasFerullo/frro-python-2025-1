@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -243,6 +243,8 @@
       const backButton = document.getElementById("stock-form-back-btn");
       const stockForm = stockFormView.querySelector("form");
 
+      let isPopupOpen = false;
+
       const getAnimElements = () =>
         document.querySelectorAll("[data-anim-name]");
 
@@ -270,20 +272,42 @@
         removeViewTransitionNames();
       };
 
-      addButton.addEventListener("click", async () => {
+      const openPopup = async () => {
+        if (isPopupOpen) return;
+
+        isPopupOpen = true;
+        applyViewTransitionNames();
+
+        history.pushState({ popup: true }, "", "");
+
+        await toggleViews();
+      };
+
+      const closePopup = async () => {
+        if (!isPopupOpen) return;
+
+        isPopupOpen = false;
         applyViewTransitionNames();
         await toggleViews();
+      };
+
+      window.addEventListener("popstate", async (event) => {
+        if (isPopupOpen) {
+          await closePopup();
+        }
+      });
+
+      addButton.addEventListener("click", async () => {
+        await openPopup();
       });
 
       backButton.addEventListener("click", async () => {
-        applyViewTransitionNames();
-        await toggleViews();
+        history.back();
       });
 
       stockForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        applyViewTransitionNames();
-        await toggleViews();
+        history.back();
       });
     </script>
   </body>
