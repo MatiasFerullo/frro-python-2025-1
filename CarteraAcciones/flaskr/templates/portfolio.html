@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -25,131 +25,290 @@
       <div
         class="w-full flex-1 items-center border-slate-200 bg-white lg:max-w-4xl lg:border-x-1"
       >
-        <div
-          class="flex flex-row items-center gap-2 bg-white p-4 lg:px-6 lg:pt-6"
-          style="view-transition-name: portfolio-bar"
-        >
-          <a
-            class="flex cursor-pointer rounded-sm p-1 text-gray-400 transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
-            href="/"
+        <!-- Portfolio -->
+        <div id="portfolio-view">
+          <div
+            class="flex flex-row items-center gap-2 bg-white p-4 lg:px-6 lg:pt-6"
+            style="view-transition-name: portfolio-bar"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+            <a
+              class="flex cursor-pointer rounded-sm p-1 text-gray-400 transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
+              href="/"
             >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M15 6l-6 6l6 6" />
-            </svg>
-          </a>
-          <h1
-            class="text-xl leading-none sm:text-2xl"
-            style="view-transition-name: portfolio-title"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M15 6l-6 6l6 6" />
+              </svg>
+            </a>
+            <h1
+              class="text-xl leading-none sm:text-2xl"
+              style="view-transition-name: portfolio-title"
+            >
+              Portafolio
+            </h1>
+          </div>
+          <div
+            class="px-4 pb-4 lg:px-6 lg:pb-6"
+            style="view-transition-name: portfolio-content"
           >
-            Portafolio
-          </h1>
-        </div>
-        <div
-          class="px-4 pb-4 lg:px-6 lg:pb-6"
-          style="view-transition-name: portfolio-content"
-        >
-          <div class="divide-y divide-gray-200">
-            <div>
-              <div class="flex w-full p-1">
-                <div class="flex w-full flex-row justify-between">
-                  <div class="flex flex-col items-start">
-                    <h3 class="font-semibold">AAPL</h3>
-                    <p class="text-gray-400">2 x $100</p>
-                  </div>
-                  <div class="flex flex-row items-center gap-2">
-                    <button
-                      class="flex cursor-pointer rounded-sm bg-slate-600 p-1 text-white transition active:scale-90"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+            <div class="divide-y divide-gray-200">
+              <div>
+                <div class="flex w-full p-1">
+                  <div class="flex w-full flex-row justify-between">
+                    <div class="flex flex-col items-start">
+                      <h3 class="font-semibold">AAPL</h3>
+                      <p class="text-gray-400">2 x $100</p>
+                    </div>
+                    <div class="flex flex-row items-center gap-2">
+                      <button
+                        class="flex cursor-pointer rounded-sm bg-slate-600 p-1 text-white transition active:scale-90"
                       >
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path
-                          d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"
-                        />
-                        <path d="M13.5 6.5l4 4" />
-                      </svg></button
-                    ><button
-                      class="flex cursor-pointer rounded-sm bg-[#eb3837] p-1 text-white transition active:scale-90"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                          <path
+                            d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"
+                          />
+                          <path d="M13.5 6.5l4 4" />
+                        </svg></button
+                      ><button
+                        class="flex cursor-pointer rounded-sm bg-[#eb3837] p-1 text-white transition active:scale-90"
                       >
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M4 7l16 0" />
-                        <path d="M10 11l0 6" />
-                        <path d="M14 11l0 6" />
-                        <path
-                          d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"
-                        />
-                        <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
-                      </svg>
-                    </button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                          <path d="M4 7l16 0" />
+                          <path d="M10 11l0 6" />
+                          <path d="M14 11l0 6" />
+                          <path
+                            d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"
+                          />
+                          <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+            <div data-anim-name="stock-form-content" id="stock-form-content">
+              <button
+                class="mt-4 flex w-full cursor-pointer justify-center rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
+                data-anim-name="stock-form-bar"
+                id="stock-form-bar"
+              >
+                <div class="flex flex-row justify-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    data-anim-name="stock-form-back"
+                    id="stock-form-back"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M12 5l0 14" />
+                    <path d="M5 12l14 0" />
+                  </svg>
+                  <label
+                    class="cursor-pointer"
+                    data-anim-name="stock-form-title"
+                    id="stock-form-title"
+                    >Añadir acción</label
+                  >
+                </div>
+              </button>
+            </div>
           </div>
-          <div style="view-transition-name: stock-form-content">
-            <a
-              class="mt-4 flex w-full cursor-pointer justify-center rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
-              href="/stock-form"
-              style="view-transition-name: stock-form-bar"
+        </div>
+        <!-- Stock form -->
+        <div hidden id="stock-form-view">
+          <div
+            class="flex flex-row items-center gap-2 bg-white p-4 lg:px-6 lg:pt-6"
+            style="view-transition-name: stock-form-bar"
+          >
+            <button
+              id="stock-form-back-btn"
+              class="flex cursor-pointer rounded-sm p-1 text-gray-400 transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
+              style="view-transition-name: stock-form-back"
             >
-              <div class="flex flex-row justify-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  style="view-transition-name: stock-form-back"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M18 6l-12 12" />
+                <path d="M6 6l12 12" />
+              </svg>
+            </button>
+            <h1
+              class="text-xl leading-none sm:text-2xl"
+              style="view-transition-name: stock-form-title"
+            >
+              Añadir acción
+            </h1>
+          </div>
+          <div
+            class="px-4 pb-4 lg:px-6 lg:pb-6"
+            style="view-transition-name: stock-form-content"
+          >
+            <form class="max-h-96 overflow-y-auto px-[2px]">
+              <p class="mb-4 flex flex-col">
+                <label class="mb-1 text-slate-500" for="company"
+                  >Nombre de la empresa</label
                 >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M12 5l0 14" />
-                  <path d="M5 12l14 0" />
-                </svg>
-                <label
-                  class="cursor-pointer"
-                  style="view-transition-name: stock-form-title"
-                  >Añadir acción</label
-                >
-              </div>
-            </a>
+                <input
+                  class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                  type="text"
+                  id="company"
+                  name="company"
+                  required
+                />
+              </p>
+              <p class="mb-4 flex flex-col">
+                <label class="mb-1 text-slate-500" for="amount">Cantidad</label>
+                <input
+                  class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                  type="number"
+                  id="amount"
+                  name="amount"
+                  required
+                />
+              </p>
+              <p class="mb-4 flex flex-col">
+                <label class="mb-1 text-slate-500" for="date">Fecha</label>
+                <input
+                  class="w-full rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                  type="date"
+                  id="date"
+                  name="date"
+                  required
+                />
+              </p>
+              <button
+                class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
+                type="submit"
+              >
+                Guardar
+              </button>
+            </form>
           </div>
         </div>
       </div>
     </div>
+    <script>
+      const portfolioView = document.getElementById("portfolio-view");
+      const stockFormView = document.getElementById("stock-form-view");
+      const addButton = document.getElementById("stock-form-bar");
+      const backButton = document.getElementById("stock-form-back-btn");
+      const stockForm = stockFormView.querySelector("form");
+
+      let isPopupOpen = false;
+
+      const getAnimElements = () =>
+        document.querySelectorAll("[data-anim-name]");
+
+      const applyViewTransitionNames = () =>
+        getAnimElements().forEach(
+          (el) => (el.style.viewTransitionName = el.dataset.animName)
+        );
+
+      const removeViewTransitionNames = () =>
+        getAnimElements().forEach((el) => (el.style.viewTransitionName = ""));
+
+      const toggleViews = async () => {
+        if (!document.startViewTransition) {
+          portfolioView.hidden = !portfolioView.hidden;
+          stockFormView.hidden = !stockFormView.hidden;
+          return;
+        }
+
+        const transition = document.startViewTransition(() => {
+          portfolioView.hidden = !portfolioView.hidden;
+          stockFormView.hidden = !stockFormView.hidden;
+        });
+
+        await transition.finished;
+        removeViewTransitionNames();
+      };
+
+      const openPopup = async () => {
+        if (isPopupOpen) return;
+
+        isPopupOpen = true;
+        applyViewTransitionNames();
+
+        history.pushState({ popup: true }, "", "");
+
+        await toggleViews();
+      };
+
+      const closePopup = async () => {
+        if (!isPopupOpen) return;
+
+        isPopupOpen = false;
+        applyViewTransitionNames();
+        await toggleViews();
+      };
+
+      window.addEventListener("popstate", async (event) => {
+        if (isPopupOpen) {
+          await closePopup();
+        }
+      });
+
+      addButton.addEventListener("click", async () => {
+        await openPopup();
+      });
+
+      backButton.addEventListener("click", async () => {
+        history.back();
+      });
+
+      stockForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        history.back();
+      });
+    </script>
   </body>
 </html>

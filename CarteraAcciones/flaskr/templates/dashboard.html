@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -119,17 +119,20 @@
       >
         <div>
           <a
-            href="#"
+            href="/"
             class="flex cursor-pointer rounded-sm p-1 font-semibold transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
             >Cartera de Acciones</a
           >
         </div>
         <div>
-          <a
-            href="#"
-            class="flex cursor-pointer rounded-sm p-1 transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
-            >Cerrar sesión</a
-          >
+          <form action="/auth/logout" method="POST">
+            <button
+              type="submit"
+              class="flex cursor-pointer rounded-sm p-1 transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
+            >
+              Cerrar sesión
+            </button>
+          </form>
         </div>
       </div>
     </div>
