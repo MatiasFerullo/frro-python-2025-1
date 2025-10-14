@@ -1,72 +1,37 @@
-from dataclasses import dataclass
-from typing import Optional, List, Dict, Any
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
 
 
-@dataclass
-class User:
-    id: int
-    username: str
-    email: str
-    password: str
+db = SQLAlchemy()  
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            'id': self.id,
-            'username': self.username,
-            'email': self.email,
-            'password': self.password  #Nota : es una prueba, no se muestra la contraseña en producción
-        }
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True, index=True)
+    email = db.Column(db.String(64), unique=True, index=True)
+    password = db.Column(db.String(128))
 
-@dataclass
-class Precio:
-    id: int
-    accion_id: int
-    precio: float
-    fecha_hora: datetime
+    def __repr__(self):
+        return f"User('{self.email}')"
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            'id': self.id,
-            'accion_id': self.accion_id,
-            'precio': float(self.precio),
-            'fecha_hora': self.fecha_hora.isoformat()
-        }
+class Accion(db.Model):
+    __tablename__ = 'accion'  # ← Tabla se llama 'accion'
+    id = db.Column(db.Integer, primary_key=True)
+    simbolo = db.Column(db.String(50), unique=True, nullable=False)
+    nombre = db.Column(db.String(200), nullable=False)
     
+    # Relación COMENTADA por ahora
+    # precios = db.relationship('Precio', backref='accion', lazy=True)
 
-@dataclass
-class Accion:
-    id: int
-    simbolo: str
-    nombre: str
-    descripcion: Optional[str] = None
-    precios: Optional[List[Precio]] = None
+    def __repr__(self):
+        return f"Accion('{self.simbolo}')"
 
-    def to_dict(self, include_prices: bool = False) -> Dict[str, Any]:
-        result = {
-            'id': self.id,
-            'simbolo': self.simbolo,
-            'nombre': self.nombre,
-            'descripcion': self.descripcion
-        }
-        if include_prices and self.precios:
-            result['precios'] = [precio.to_dict() for precio in self.precios]
-        return result
-    
-    def agregar_precio(self, precio: float, fecha_hora: Optional[datetime] = None):
-        if self.precios is None:
-            self.precios = []
-        
-        nuevo_precio = Precio(
-            id=0, # El ID debería ser asignado por la base de datos
-            accion_id=self.id,
-            precio=precio,
-            fecha_hora=fecha_hora or datetime.now()
-        )
-        self.precios.append(nuevo_precio)
-        return nuevo_precio
-    
-    def obtener_ultimo_precio(self) -> Optional[Precio]:
-        if self.precios:
-            return max(self.precios, key=lambda p: p.fecha_hora)
-        return None
+class Precio(db.Model):
+    __tablename__ = 'precios'  
+    id = db.Column(db.Integer, primary_key=True)
+    accion_id = db.Column(db.Integer, db.ForeignKey('accion.id'), nullable=False)  # ← 'accion.id' NO 'acciones.id'
+    precio = db.Column(db.Float, nullable=False)
+    fecha_hora = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"Precio('{self.precio}', '{self.fecha_hora}')"

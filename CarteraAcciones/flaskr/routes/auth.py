@@ -1,7 +1,6 @@
 from flaskr.services.message_service import render_message
 from flask import Blueprint, redirect, render_template, request, jsonify, url_for, session
-from flaskr.models import User
-from flaskr.services.fake_db import users
+from flaskr.models import User, db  # ← Importar db para usar la base de datos
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -19,27 +18,33 @@ def register():
     password = data['password']
     password_repeat = data['password_repeat']
 
-    if any(u.username == username for u in users):
+    # Verificar si el usuario ya existe en la BASE DE DATOS
+    existing_user = User.query.filter_by(username=username).first()
+    if existing_user:
         return render_message(
             "Error en el registro",
             "El nombre de usuario ya existe. Por favor, elige otro nombre de usuario.",
             "Volver",
             url_for('auth.registerPage'))
 
-    if any(u.email == email for u in users):
+    # Verificar si el email ya existe en la BASE DE DATOS
+    existing_email = User.query.filter_by(email=email).first()
+    if existing_email:
         return render_message(
             "Error en el registro",
             "El correo electrónico ya está registrado. Por favor, usa otro correo o inicia sesión.",
             "Volver",
             url_for('auth.registerPage'))
 
+    # Crear nuevo usuario en la BASE DE DATOS
     new_user = User(
-        id=0,
         username=username,
         email=email,
-        password=password
+        password=password  # En producción, esto debería estar encriptado
     )
-    users.append(new_user)
+    
+    db.session.add(new_user)
+    db.session.commit()
 
     session['user_id'] = new_user.id
     return redirect(url_for('index.index'))
@@ -56,11 +61,13 @@ def login():
     username = data['username']
     password = data['password']
     
-    user = next((u for u in users if u.username == username and u.password == password), None)
+    # Buscar usuario en la BASE DE DATOS
+    user = User.query.filter_by(username=username, password=password).first()
     
     if user:
         session['user_id'] = user.id
         return redirect(url_for('index.index'))
+    
     return render_message(
         "Credenciales inválidas",
         "El usuario o contraseña son incorrectos.",
@@ -74,11 +81,22 @@ def logout():
 
 @auth_bp.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
-    user = next((u for u in users if u.id == user_id), None)
+    # Buscar usuario en la BASE DE DATOS
+    user = User.query.get(user_id)
     if user:
-        return jsonify(user.to_dict()), 200
+        return jsonify({
+            'id': user.id,
+            'username': user.username,
+            'email': user.email
+        }), 200
     return jsonify({'message': 'Usuario no encontrado'}), 404
 
 @auth_bp.route('/users', methods=['GET'])
 def list_users():
-    return jsonify([user.to_dict() for user in users]), 200
+    # Obtener todos los usuarios de la BASE DE DATOS
+    users = User.query.all()
+    return jsonify([{
+        'id': user.id,
+        'username': user.username,
+        'email': user.email
+    } for user in users]), 200

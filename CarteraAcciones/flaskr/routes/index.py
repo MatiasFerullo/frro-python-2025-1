@@ -37,3 +37,12 @@ def stockForm():
     if (loggedIn):
         return render_template('stock-form.html')
     return redirect(url_for('index.index'))
+
+@index_bp.route('/test-api')
+def test_api():
+    try:
+        from flaskr.services.pyrofex_service import obtener_acciones_desde_api
+        acciones = obtener_acciones_desde_api()
+        return f"✅ API funciona. Se encontraron {len(acciones)} acciones:<br><pre>{acciones}</pre>"
+    except Exception as e:
+        return f"❌ Error en API: {str(e)}"
