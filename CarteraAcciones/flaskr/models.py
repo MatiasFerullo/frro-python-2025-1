@@ -11,6 +11,7 @@ class User(db.Model):
     email = db.Column(db.String(64), unique=True, index=True)
     password = db.Column(db.String(128))
 
+    usuario_acciones = db.relationship("UsuarioAccion", back_populates="user", lazy='select')
     def __repr__(self):
         return f"User('{self.email}')"
 
@@ -22,6 +23,7 @@ class Accion(db.Model):
     
     # Relación COMENTADA por ahora
     # precios = db.relationship('Precio', backref='accion', lazy=True)
+    usuario_acciones = db.relationship("UsuarioAccion", back_populates="accion", lazy='select')
 
     def __repr__(self):
         return f"Accion('{self.simbolo}')"
@@ -35,3 +37,16 @@ class Precio(db.Model):
 
     def __repr__(self):
         return f"Precio('{self.precio}', '{self.fecha_hora}')"
+
+class UsuarioAccion(db.Model):
+    __tablename__ = "usuario_accion"
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    accion_id = db.Column(db.Integer, db.ForeignKey("accion.id"), primary_key=True)
+    fecha_hora = db.Column(db.DateTime, primary_key=True)
+    cantidad = db.Column(db.Float, nullable=False)
+    precio_compra = db.Column(db.Float, nullable=False)
+    comision = db.Column(db.Float, nullable=False, default=0)
+    moneda = db.Column(db.String(10), nullable=False, default="USD")
+
+    user = db.relationship("User", back_populates="usuario_acciones")
+    accion = db.relationship("Accion", back_populates="usuario_acciones")

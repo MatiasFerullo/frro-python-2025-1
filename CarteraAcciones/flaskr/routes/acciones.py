@@ -1,6 +1,7 @@
 ## ACA VAN LAS TODAS LAS RUTAS RELACIONADAS CON LAS ACCIONES
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
 from flaskr.services.pyrofex_service import obtener_acciones_desde_api
+from datetime import datetime
 
 acciones_bp = Blueprint('acciones', __name__)
 
@@ -94,3 +95,44 @@ def listar_acciones():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# Agregar una accion al portafolio del usuario (form de "Añadir accion" en /portfolio)
+@acciones_bp.route('/new-portfolio-stock', methods=['POST'])
+def add_stock_to_portfolio():
+    if 'user_id' not in session:
+        return redirect(url_for('index.index'))
+    
+    user_id = session['user_id']
+
+    from flaskr.models import Accion, User, UsuarioAccion, db
+
+    data = request.form
+    fecha_hora = data.get('fecha_hora')
+    accion_id = data['accion_id']
+    cantidad = data['cantidad']
+    precio_compra = data['precio_compra']
+    comision = data['comision']
+    moneda = data['moneda']
+
+    accion = Accion.query.filter_by(id=accion_id).first()
+    if not accion:
+        return jsonify({'error': 'Acción no encontrada'}), 404
+
+    nueva_usuario_accion = UsuarioAccion(
+        user_id=user_id,
+        accion_id=accion_id,
+        fecha_hora=fecha_hora,
+        cantidad=cantidad,
+        precio_compra=precio_compra,
+        comision=comision,
+        moneda=moneda
+    )
+
+    try:
+        db.session.add(nueva_usuario_accion)
+        db.session.commit()
+        user = User.query.filter_by(id=user_id).first()
+        return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones)
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': "Couldn't persist db"}), 500

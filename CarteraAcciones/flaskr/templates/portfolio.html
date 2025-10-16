@@ -14,6 +14,7 @@
       media="screen"
       href="{{ url_for('static', filename='css/output.css') }}"
     />
+    <script src="{{ url_for('static', filename='js/htmx.min.js') }}"></script>
     <style>
       @view-transition {
         navigation: auto; /**/
@@ -61,64 +62,13 @@
             class="px-4 pb-4 lg:px-6 lg:pb-6"
             style="view-transition-name: portfolio-content"
           >
-            <div class="divide-y divide-gray-200">
-              <div>
-                <div class="flex w-full p-1">
-                  <div class="flex w-full flex-row justify-between">
-                    <div class="flex flex-col items-start">
-                      <h3 class="font-semibold">AAPL</h3>
-                      <p class="text-gray-400">2 x $100</p>
-                    </div>
-                    <div class="flex flex-row items-center gap-2">
-                      <button
-                        class="flex cursor-pointer rounded-sm bg-slate-600 p-1 text-white transition active:scale-90"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                          <path
-                            d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"
-                          />
-                          <path d="M13.5 6.5l4 4" />
-                        </svg></button
-                      ><button
-                        class="flex cursor-pointer rounded-sm bg-[#eb3837] p-1 text-white transition active:scale-90"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                          <path d="M4 7l16 0" />
-                          <path d="M10 11l0 6" />
-                          <path d="M14 11l0 6" />
-                          <path
-                            d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"
-                          />
-                          <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div
+              class="divide-y divide-gray-200"
+              hx-get="about:blank"
+              hx-trigger="load"
+              hx-swap="innerHTML"
+              id="stock-list"
+            ></div>
             <div data-anim-name="stock-form-content" id="stock-form-content">
               <button
                 class="mt-4 flex w-full cursor-pointer justify-center rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
@@ -192,18 +142,27 @@
             class="px-4 pb-4 lg:px-6 lg:pb-6"
             style="view-transition-name: stock-form-content"
           >
-            <form class="max-h-96 overflow-y-auto px-[2px]">
+            <form
+              class="px-[2px]"
+              hx-post="/new-portfolio-stock"
+              hx-swap="innerHTML"
+              hx-target="#stock-list"
+              onsubmit="history.back()"
+            >
               <p class="mb-4 flex flex-col">
-                <label class="mb-1 text-slate-500" for="company"
-                  >Nombre de la empresa</label
+                <label class="mb-1 text-slate-500" for="stock"
+                  >Nombre de la acción</label
                 >
-                <input
+                <select
                   class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
-                  type="text"
-                  id="company"
-                  name="company"
+                  id="stock"
+                  name="accion_id"
                   required
-                />
+                >
+                  <option value="1">
+                    Accion Mockup de id 1 (a implementar todavía)
+                  </option>
+                </select>
               </p>
               <p class="mb-4 flex flex-col">
                 <label class="mb-1 text-slate-500" for="amount">Cantidad</label>
@@ -211,7 +170,10 @@
                   class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
                   type="number"
                   id="amount"
-                  name="amount"
+                  min="1"
+                  step="1"
+                  name="cantidad"
+                  value="1"
                   required
                 />
               </p>
@@ -221,9 +183,51 @@
                   class="w-full rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
                   type="date"
                   id="date"
-                  name="date"
+                  name="fecha_hora"
                   required
                 />
+              </p>
+              <p class="mb-4 flex flex-col">
+                <label class="mb-1 text-slate-500" for="price"
+                  >Precio de compra</label
+                >
+                <input
+                  class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                  type="number"
+                  id="price"
+                  min="0.01"
+                  step="0.01"
+                  value="0.01"
+                  name="precio_compra"
+                  required
+                />
+              </p>
+              <p class="mb-4 flex flex-col">
+                <label class="mb-1 text-slate-500" for="commission"
+                  >Comisión</label
+                >
+                <input
+                  class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                  type="number"
+                  id="commission"
+                  name="comision"
+                  min="0"
+                  step="0.01"
+                  value="0.0"
+                  required
+                />
+              </p>
+              <p class="mb-4 flex flex-col">
+                <label class="mb-1 text-slate-500" for="currency">Moneda</label>
+                <select
+                  class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                  id="currency"
+                  name="moneda"
+                  required
+                >
+                  <option value="ARS">ARS</option>
+                  <option value="USD">USD</option>
+                </select>
               </p>
               <button
                 class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
@@ -302,11 +306,6 @@
       });
 
       backButton.addEventListener("click", async () => {
-        history.back();
-      });
-
-      stockForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
         history.back();
       });
     </script>
