@@ -5,7 +5,7 @@ from datetime import datetime
 
 acciones_bp = Blueprint('acciones', __name__)
 
-@acciones_bp.route('/cargar-acciones', methods=['POST'])
+@acciones_bp.route('/cargar-acciones', methods=['GET'])
 def cargar_acciones():
     try:
         instrumentos_api = obtener_acciones_desde_api()  
@@ -146,3 +146,34 @@ def get_user_stocks():
     from flaskr.models import User
     user = User.query.filter_by(id=user_id).first()
     return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones)
+
+@acciones_bp.route('/delete-user-stock/<int:usuario_accion_id>', methods=['DELETE'])
+def delete_user_stock(usuario_accion_id):
+    if 'user_id' not in session:
+        return redirect(url_for('index.index'))
+    
+    user_id = session['user_id']
+    from flaskr.models import UsuarioAccion, User, db
+
+    usuario_accion = UsuarioAccion.query.filter_by(id=usuario_accion_id, user_id=user_id).first()
+    if not usuario_accion:
+        return jsonify({'error': 'Registro no encontrado'}), 404
+
+    try:
+        db.session.delete(usuario_accion)
+        db.session.commit()
+        user = User.query.filter_by(id=user_id).first()
+        return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones)
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': "Couldn't delete from db"}), 500
+
+@acciones_bp.route('/get-available-stocks', methods=['GET'])
+def get_available_stocks():
+    try:
+        from flaskr.models import Accion
+        
+        acciones = Accion.query.all()
+        return render_template('htmx/available-stocks.html', acciones=acciones)
+    except Exception as e:
+        return jsonify({'error': "Couldn't get available stock"}), 500

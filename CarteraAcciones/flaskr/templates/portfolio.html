@@ -158,11 +158,11 @@
                   id="stock"
                   name="accion_id"
                   required
-                >
-                  <option value="1">
-                    Accion Mockup de id 1 (a implementar todavía)
-                  </option>
-                </select>
+                  hx-get="/get-available-stocks"
+                  hx-trigger="load"
+                  hx-swap="innerHTML"
+                  hx-target="this"
+                ></select>
               </p>
               <p class="mb-4 flex flex-col">
                 <label class="mb-1 text-slate-500" for="amount">Cantidad</label>
@@ -178,14 +178,22 @@
                 />
               </p>
               <p class="mb-4 flex flex-col">
-                <label class="mb-1 text-slate-500" for="date">Fecha</label>
+                <label class="mb-1 text-slate-500" for="date"
+                  >Fecha y hora</label
+                >
                 <input
                   class="w-full rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
-                  type="date"
+                  type="datetime-local"
                   id="date"
                   name="fecha_hora"
+                  value=""
                   required
                 />
+                <script>
+                  const now = new Date();
+                  const formattedDate = now.toISOString().slice(0, 16);
+                  document.getElementById("date").value = formattedDate;
+                </script>
               </p>
               <p class="mb-4 flex flex-col">
                 <label class="mb-1 text-slate-500" for="price"

@@ -40,9 +40,10 @@ class Precio(db.Model):
 
 class UsuarioAccion(db.Model):
     __tablename__ = "usuario_accion"
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
-    accion_id = db.Column(db.Integer, db.ForeignKey("accion.id"), primary_key=True)
-    fecha_hora = db.Column(db.DateTime, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    accion_id = db.Column(db.Integer, db.ForeignKey("accion.id"))
+    fecha_hora = db.Column(db.DateTime)
     cantidad = db.Column(db.Float, nullable=False)
     precio_compra = db.Column(db.Float, nullable=False)
     comision = db.Column(db.Float, nullable=False, default=0)

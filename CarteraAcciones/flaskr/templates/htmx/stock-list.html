@@ -29,6 +29,9 @@
           </svg></button
         ><button
           class="flex cursor-pointer rounded-sm bg-[#eb3837] p-1 text-white transition active:scale-90"
+          hx-delete="/delete-user-stock/{{ usuario_accion.id }}"
+          hx-target="#stock-list"
+          hx-swap="innerHTML"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
