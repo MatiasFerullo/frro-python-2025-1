@@ -1,4 +1,4 @@
-{% for usuario_accion in usuario_acciones %}
+{% if usuario_acciones %} {% for usuario_accion in usuario_acciones %}
 <div>
   <div class="flex w-full p-1">
     <div class="flex w-full flex-row justify-between">
@@ -53,4 +53,8 @@
     </div>
   </div>
 </div>
-{% endfor %}
+{% endfor %} {% else %}
+<p class="rounded-sm bg-gray-200 p-4 text-center text-gray-600 lg:p-6">
+  No hay acciones que mostrar
+</p>
+{% endif %}

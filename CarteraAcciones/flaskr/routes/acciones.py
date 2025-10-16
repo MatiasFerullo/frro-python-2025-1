@@ -136,3 +136,13 @@ def add_stock_to_portfolio():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': "Couldn't persist db"}), 500
+
+@acciones_bp.route('/get-user-stocks', methods=['GET'])
+def get_user_stocks():
+    if 'user_id' not in session:
+        return redirect(url_for('index.index'))
+    
+    user_id = session['user_id']
+    from flaskr.models import User
+    user = User.query.filter_by(id=user_id).first()
+    return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones)
