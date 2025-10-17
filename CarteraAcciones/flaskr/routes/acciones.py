@@ -178,3 +178,36 @@ def get_available_stocks():
         return render_template('htmx/available-stocks.html', acciones=acciones)
     except Exception as e:
         return jsonify({'error': "Couldn't get available stock"}), 500
+
+@acciones_bp.route('/edit-portfolio-stock', methods=['PATCH'])
+def edit_user_stock():
+    if 'user_id' not in session:
+        return redirect(url_for('index.index'))
+    
+    user_id = session['user_id']
+
+    from flaskr.models import UsuarioAccion, User, UsuarioAccion, db
+
+    data = request.form
+    usuario_accion_id = data['usuario_accion_id']
+    fecha_hora = data.get('fecha_hora')
+    cantidad = data['cantidad']
+    precio_compra = data['precio_compra']
+    moneda = data['moneda']
+
+    usuario_accion = UsuarioAccion.query.filter_by(id=usuario_accion_id).first()
+    if not usuario_accion:
+        return jsonify({'error': 'Acción del usuario no encontrada'}), 404
+
+    usuario_accion.fecha_hora = fecha_hora
+    usuario_accion.cantidad = cantidad
+    usuario_accion.precio_compra = precio_compra
+    usuario_accion.moneda = moneda
+
+    try:
+        db.session.commit()
+        user = User.query.filter_by(id=user_id).first()
+        return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view='edit')
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': "Couldn't persist db"}), 500

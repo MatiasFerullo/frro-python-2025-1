@@ -267,11 +267,16 @@
           >
             <form
               class="px-[2px]"
-              hx-post="/new-portfolio-stock"
+              hx-patch="/edit-portfolio-stock"
               hx-swap="innerHTML"
               hx-target="#stock-list"
               onsubmit="history.back()"
             >
+              <input
+                type="hidden"
+                name="usuario_accion_id"
+                id="edit-user-stock-id"
+              />
               <div class="mb-4 flex flex-col">
                 <p class="mb-1 text-slate-500">Nombre de la acción</p>
                 <div
@@ -425,11 +430,13 @@
         const editBar = document.getElementById("edit-stock-form-bar");
 
         // Form fields
+        const editUserStockId = document.getElementById("edit-user-stock-id");
         const editAmount = document.getElementById("edit-amount");
         const editDate = document.getElementById("edit-date");
         const editPrice = document.getElementById("edit-price");
         const editCurrency = document.getElementById("edit-currency");
 
+        editUserStockId.value = id;
         editSymbol.style.viewTransitionName = `edit-stock-form-symbol-${id}`;
         editContent.style.viewTransitionName = `edit-stock-form-content-${id}`;
         editBar.style.viewTransitionName = `edit-stock-form-bar-${id}`;
