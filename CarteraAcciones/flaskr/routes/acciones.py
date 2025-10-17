@@ -132,7 +132,7 @@ def add_stock_to_portfolio():
         db.session.add(nueva_usuario_accion)
         db.session.commit()
         user = User.query.filter_by(id=user_id).first()
-        return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones)
+        return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view='edit')
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': "Couldn't persist db"}), 500
@@ -145,7 +145,10 @@ def get_user_stocks():
     user_id = session['user_id']
     from flaskr.models import User
     user = User.query.filter_by(id=user_id).first()
-    return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones)
+    view = request.args.get('view')
+    if view == None or view == '' or view not in ['menu', 'edit']:
+        view = 'menu'
+    return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view=view)
 
 @acciones_bp.route('/delete-user-stock/<int:usuario_accion_id>', methods=['DELETE'])
 def delete_user_stock(usuario_accion_id):
@@ -163,7 +166,7 @@ def delete_user_stock(usuario_accion_id):
         db.session.delete(usuario_accion)
         db.session.commit()
         user = User.query.filter_by(id=user_id).first()
-        return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones)
+        return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view='edit')
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': "Couldn't delete from db"}), 500
