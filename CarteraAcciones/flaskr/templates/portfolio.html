@@ -73,7 +73,7 @@
               <button
                 class="mt-4 flex w-full cursor-pointer justify-center rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
                 data-anim-name="stock-form-bar"
-                id="stock-form-bar"
+                onclick="openPopup('add')"
               >
                 <div class="flex flex-row justify-center gap-2">
                   <svg
@@ -231,16 +231,139 @@
             </form>
           </div>
         </div>
+        <!-- Edit stock form -->
+        <div hidden id="edit-stock-form-view">
+          <div
+            class="flex flex-row items-center gap-2 bg-white p-4 lg:px-6 lg:pt-6"
+            style="view-transition-name: edit-stock-form-bar"
+          >
+            <button
+              id="edit-stock-form-back-btn"
+              class="flex cursor-pointer rounded-sm p-1 text-gray-400 transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M18 6l-12 12" />
+                <path d="M6 6l12 12" />
+              </svg>
+            </button>
+            <h1 class="text-xl leading-none sm:text-2xl">Editar acción</h1>
+          </div>
+          <div
+            class="px-4 pb-4 lg:px-6 lg:pb-6"
+            style="view-transition-name: edit-stock-form-content"
+          >
+            <form
+              class="px-[2px]"
+              hx-post="/new-portfolio-stock"
+              hx-swap="innerHTML"
+              hx-target="#stock-list"
+              onsubmit="history.back()"
+            >
+              <div class="mb-4 flex flex-col">
+                <p class="mb-1 text-slate-500">Nombre de la acción</p>
+                <div
+                  class="flex items-start rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                  id="edit-stock"
+                >
+                  <h3
+                    class="font-semibold"
+                    style="view-transition-name: edit-stock-form-symbol"
+                    id="edit-stock-symbol"
+                  >
+                    BLANK
+                  </h3>
+                </div>
+              </div>
+              <p class="mb-4 flex flex-col">
+                <label class="mb-1 text-slate-500" for="edit-amount"
+                  >Cantidad</label
+                >
+                <input
+                  class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                  type="number"
+                  id="edit-amount"
+                  min="1"
+                  step="1"
+                  name="cantidad"
+                  value="1"
+                  required
+                />
+              </p>
+              <p class="mb-4 flex flex-col">
+                <label class="mb-1 text-slate-500" for="edit-date"
+                  >Fecha y hora</label
+                >
+                <input
+                  class="w-full rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                  type="datetime-local"
+                  id="edit-date"
+                  name="fecha_hora"
+                  value=""
+                  required
+                />
+              </p>
+              <p class="mb-4 flex flex-col">
+                <label class="mb-1 text-slate-500" for="edit-price"
+                  >Precio de compra</label
+                >
+                <input
+                  class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                  type="number"
+                  id="edit-price"
+                  min="0.01"
+                  step="0.01"
+                  value="0.01"
+                  name="precio_compra"
+                  required
+                />
+              </p>
+              <p class="mb-4 flex flex-col">
+                <label class="mb-1 text-slate-500" for="edit-currency"
+                  >Moneda</label
+                >
+                <select
+                  class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                  id="edit-currency"
+                  name="moneda"
+                  required
+                >
+                  <option value="ARS">ARS</option>
+                  <option value="USD">USD</option>
+                </select>
+              </p>
+              <button
+                class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
+                type="submit"
+              >
+                Guardar
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
     <script>
       const portfolioView = document.getElementById("portfolio-view");
       const stockFormView = document.getElementById("stock-form-view");
-      const addButton = document.getElementById("stock-form-bar");
+      const editStockFormView = document.getElementById("edit-stock-form-view");
       const backButton = document.getElementById("stock-form-back-btn");
-      const stockForm = stockFormView.querySelector("form");
+      const editBackButton = document.getElementById(
+        "edit-stock-form-back-btn"
+      );
 
       let isPopupOpen = false;
+      let currentPopup = null; // 'add' | 'edit'
 
       const getAnimElements = () =>
         document.querySelectorAll("[data-anim-name]");
@@ -253,39 +376,69 @@
       const removeViewTransitionNames = () =>
         getAnimElements().forEach((el) => (el.style.viewTransitionName = ""));
 
-      const toggleViews = async () => {
+      const toggleViews = async (targetView) => {
         if (!document.startViewTransition) {
-          portfolioView.hidden = !portfolioView.hidden;
-          stockFormView.hidden = !stockFormView.hidden;
+          portfolioView.hidden = true;
+          stockFormView.hidden = true;
+          editStockFormView.hidden = true;
+          targetView.hidden = false;
           return;
         }
 
         const transition = document.startViewTransition(() => {
-          portfolioView.hidden = !portfolioView.hidden;
-          stockFormView.hidden = !stockFormView.hidden;
+          portfolioView.hidden = true;
+          stockFormView.hidden = true;
+          editStockFormView.hidden = true;
+          targetView.hidden = false;
         });
 
         await transition.finished;
         removeViewTransitionNames();
       };
 
-      const openPopup = async () => {
+      const openPopup = async (type) => {
         if (isPopupOpen) return;
 
         isPopupOpen = true;
+        currentPopup = type;
         applyViewTransitionNames();
 
-        history.pushState({ popup: true }, "", "");
+        history.pushState({ popup: type }, "", "");
 
-        await toggleViews();
+        const targetView = type === "edit" ? editStockFormView : stockFormView;
+        await toggleViews(targetView);
+      };
+
+      const openEditPopup = async (
+        id,
+        symbol,
+        amount,
+        date,
+        price,
+        currency
+      ) => {
+        const editSymbol = document.getElementById("edit-stock-symbol");
+        const editAmount = document.getElementById("edit-amount");
+        const editDate = document.getElementById("edit-date");
+        const editPrice = document.getElementById("edit-price");
+        const editCurrency = document.getElementById("edit-currency");
+
+        editSymbol.textContent = symbol;
+        editAmount.value = amount;
+        editDate.value = date;
+        editPrice.value = price;
+        editCurrency.value = currency;
+
+        await openPopup("edit");
       };
 
       const closePopup = async () => {
         if (!isPopupOpen) return;
 
         isPopupOpen = false;
+        currentPopup = null;
         applyViewTransitionNames();
-        await toggleViews();
+        await toggleViews(portfolioView);
       };
 
       window.addEventListener("popstate", async (event) => {
@@ -294,11 +447,11 @@
         }
       });
 
-      addButton.addEventListener("click", async () => {
-        await openPopup();
+      backButton.addEventListener("click", async () => {
+        history.back();
       });
 
-      backButton.addEventListener("click", async () => {
+      editBackButton.addEventListener("click", async () => {
         history.back();
       });
     </script>
