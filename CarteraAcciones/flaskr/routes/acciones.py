@@ -111,7 +111,6 @@ def add_stock_to_portfolio():
     accion_id = data['accion_id']
     cantidad = data['cantidad']
     precio_compra = data['precio_compra']
-    comision = data['comision']
     moneda = data['moneda']
 
     accion = Accion.query.filter_by(id=accion_id).first()
@@ -124,7 +123,6 @@ def add_stock_to_portfolio():
         fecha_hora=fecha_hora,
         cantidad=cantidad,
         precio_compra=precio_compra,
-        comision=comision,
         moneda=moneda
     )
 
