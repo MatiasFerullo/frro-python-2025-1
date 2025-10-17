@@ -9,10 +9,10 @@
             <div class="flex flex-col items-start">
               <h3 class="font-semibold">{{ usuario_accion.accion.simbolo }}
               </h3>
-              <p class="text-gray-400">{{ usuario_accion.cantidad }} x ${{ usuario_accion.precio_compra }}</p>
+              <p class="text-gray-400">{{ usuario_accion.cantidad }} x ${{ usuario_accion.precio_compra }} ARS</p>
             </div>
             <div class="flex flex-col items-end">
-              <h3 class="font-semibold">${{ usuario_accion.cantidad * usuario_accion.precio_compra }}</h3>
+              <h3 class="font-semibold">${{ usuario_accion.cantidad * usuario_accion.precio_compra }} <span class="text-gray-400 font-normal">ARS</span></h3>
               <div
                 class="flex flex-row items-center gap-1 rounded-full bg-green-100 px-2 text-green-600"
               >
@@ -47,7 +47,7 @@
               <h3 class="font-semibold" data-anim-name="edit-stock-form-symbol-{{ usuario_accion.id }}">{{ usuario_accion.accion.simbolo }}</h3>
               <div class="flex flex-row items-center gap-1 text-gray-400">
                 <p>
-                    {{ usuario_accion.cantidad }} x ${{ usuario_accion.precio_compra }} {{usuario_accion.moneda}}
+                    {{ usuario_accion.cantidad }} x ${{ usuario_accion.precio_compra }} ARS
                 </p>
                 <p>-</p>
                 <p class="text-xs">{{ usuario_accion.fecha_hora.strftime('%d/%m/%Y') }}</p>
@@ -56,7 +56,7 @@
             <div class="flex flex-row items-center gap-2">
               <button
                 class="flex cursor-pointer rounded-sm bg-slate-600 p-1 text-white transition active:scale-90"
-                onclick="openEditPopup('{{ usuario_accion.id }}', '{{ usuario_accion.accion.simbolo }}', '{{ usuario_accion.cantidad }}', '{{ usuario_accion.fecha_hora }}', '{{ usuario_accion.precio_compra }}', '{{ usuario_accion.moneda }}')"
+                onclick="openEditPopup('{{ usuario_accion.id }}', '{{ usuario_accion.accion.simbolo }}', '{{ usuario_accion.cantidad }}', '{{ usuario_accion.fecha_hora }}', '{{ usuario_accion.precio_compra }}')"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

@@ -46,7 +46,6 @@ class UsuarioAccion(db.Model):
     fecha_hora = db.Column(db.DateTime)
     cantidad = db.Column(db.Float, nullable=False)
     precio_compra = db.Column(db.Float, nullable=False)
-    moneda = db.Column(db.String(10), nullable=False, default="USD")
 
     user = db.relationship("User", back_populates="usuario_acciones")
     accion = db.relationship("Accion", back_populates="usuario_acciones")

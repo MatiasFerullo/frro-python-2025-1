@@ -111,7 +111,6 @@ def add_stock_to_portfolio():
     accion_id = data['accion_id']
     cantidad = data['cantidad']
     precio_compra = data['precio_compra']
-    moneda = data['moneda']
 
     accion = Accion.query.filter_by(id=accion_id).first()
     if not accion:
@@ -122,8 +121,7 @@ def add_stock_to_portfolio():
         accion_id=accion_id,
         fecha_hora=fecha_hora,
         cantidad=cantidad,
-        precio_compra=precio_compra,
-        moneda=moneda
+        precio_compra=precio_compra
     )
 
     try:
@@ -193,7 +191,6 @@ def edit_user_stock():
     fecha_hora = data.get('fecha_hora')
     cantidad = data['cantidad']
     precio_compra = data['precio_compra']
-    moneda = data['moneda']
 
     usuario_accion = UsuarioAccion.query.filter_by(id=usuario_accion_id).first()
     if not usuario_accion:
@@ -202,7 +199,6 @@ def edit_user_stock():
     usuario_accion.fecha_hora = fecha_hora
     usuario_accion.cantidad = cantidad
     usuario_accion.precio_compra = precio_compra
-    usuario_accion.moneda = moneda
 
     try:
         db.session.commit()
