@@ -207,3 +207,18 @@ def edit_user_stock():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': "Couldn't persist db"}), 500
+
+@acciones_bp.route('/get-portfolio-summary', methods=['GET'])
+def get_portfolio_summary():
+    if 'user_id' not in session:
+        return redirect(url_for('index.index'))
+    
+    user_id = session['user_id']
+    from flaskr.models import User
+    user = User.query.filter_by(id=user_id).first()
+
+    sum = 0.0
+    for usuario_accion in user.usuario_acciones:
+        sum += (usuario_accion.cantidad * usuario_accion.precio_compra)
+
+    return render_template('htmx/portfolio-summary.html', usuario_acciones=user.usuario_acciones, sum=sum)
