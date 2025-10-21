@@ -1,6 +1,6 @@
 from flaskr.services.message_service import render_message
 from flask import Blueprint, redirect, render_template, request, jsonify, url_for, session
-from flaskr.models import User, db  # ← Importar db para usar la base de datos
+from flaskr.models import Usuario, db  # ← Importar db para usar la base de datos
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -19,7 +19,7 @@ def register():
     password_repeat = data['password_repeat']
 
     # Verificar si el usuario ya existe en la BASE DE DATOS
-    existing_user = User.query.filter_by(username=username).first()
+    existing_user = Usuario.query.filter_by(username=username).first()
     if existing_user:
         return render_message(
             "Error en el registro",
@@ -28,7 +28,7 @@ def register():
             url_for('auth.registerPage'))
 
     # Verificar si el email ya existe en la BASE DE DATOS
-    existing_email = User.query.filter_by(email=email).first()
+    existing_email = Usuario.query.filter_by(email=email).first()
     if existing_email:
         return render_message(
             "Error en el registro",
@@ -37,7 +37,7 @@ def register():
             url_for('auth.registerPage'))
 
     # Crear nuevo usuario en la BASE DE DATOS
-    new_user = User(
+    new_user = Usuario(
         username=username,
         email=email,
         password=password  # En producción, esto debería estar encriptado
@@ -62,7 +62,7 @@ def login():
     password = data['password']
     
     # Buscar usuario en la BASE DE DATOS
-    user = User.query.filter_by(username=username, password=password).first()
+    user = Usuario.query.filter_by(username=username, password=password).first()
     
     if user:
         session['user_id'] = user.id
@@ -82,7 +82,7 @@ def logout():
 @auth_bp.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     # Buscar usuario en la BASE DE DATOS
-    user = User.query.get(user_id)
+    user = Usuario.query.get(user_id)
     if user:
         return jsonify({
             'id': user.id,
@@ -94,7 +94,7 @@ def get_user(user_id):
 @auth_bp.route('/users', methods=['GET'])
 def list_users():
     # Obtener todos los usuarios de la BASE DE DATOS
-    users = User.query.all()
+    users = Usuario.query.all()
     return jsonify([{
         'id': user.id,
         'username': user.username,

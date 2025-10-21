@@ -2,77 +2,90 @@
 from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
 from flaskr.services.pyrofex_service import obtener_acciones_desde_api
 from datetime import datetime
+from flask import Blueprint, jsonify
+from flaskr.models import Accion, Precio_accion
+from datetime import datetime
+from flaskr import db
+from flaskr.services.pyrofex_service import get_active_futures 
 
-acciones_bp = Blueprint('acciones', __name__)
 
-@acciones_bp.route('/cargar-acciones', methods=['GET'])
-def cargar_acciones():
+
+
+futuros_bp = Blueprint('futuros', __name__)
+
+@futuros_bp.route('/cargar-futuros', methods=['POST'])
+def cargar_futuros():
     try:
-        instrumentos_api = obtener_acciones_desde_api()  
-        
-        from flaskr.models import Accion, db
-        
-        # Test simple de la BD
-        count_antes = Accion.query.count()
-        print(f"OK: BD conectada. Hay {count_antes} acciones")
+        print(" Paso 1: Obteniendo futuros de PyRofex...")
+        futuros_api = get_active_futures()
+        print(f"✅ Paso 1 OK: {len(futuros_api)} futuros obtenidos")
 
-        print("Procesando instrumentos...")
-        instrumentos_nuevos = []
-        instrumentos_existentes = []
-        
-        for instrumento_data in instrumentos_api:
-            # Verificar si ya existe
-            existe = Accion.query.filter_by(simbolo=instrumento_data['simbolo']).first()
-            if not existe:
-                nuevo_instrumento = Accion(
-                    simbolo=instrumento_data['simbolo'], 
-                    nombre=instrumento_data['nombre']
+        print(" Paso 2: Verificando conexión a BD...")
+        count_antes = Accion.query.count()
+        print(f"✅ Paso 2 OK: BD conectada. Hay {count_antes} acciones")
+
+        print(" Paso 3: Procesando futuros...")
+        futuros_nuevos = []
+        precios_nuevos = []
+
+        for fut_data in futuros_api:
+            symbol = fut_data['symbol']
+            price = fut_data['price']
+
+            # Verificar si el futuro ya existe
+            accion_existente = Accion.query.filter_by(simbolo=symbol).first()
+
+            if not accion_existente:
+                # Crear nueva acción (en tu BD los futuros también van en tabla Accion)
+                nueva_accion = Accion(
+                    simbolo=symbol,
+                    nombre=symbol  # Podés cambiar si querés un nombre más descriptivo
                 )
-                instrumentos_nuevos.append(nuevo_instrumento)
-                print(f" Nuevo: {instrumento_data['simbolo']} - {instrumento_data['nombre']}")
+                db.session.add(nueva_accion)
+                db.session.flush()  # Para obtener el ID
+                futuros_nuevos.append(nueva_accion)
+                print(f" Nuevo futuro: {symbol} (ID: {nueva_accion.id})")
+                accion_para_precio = nueva_accion
             else:
-                instrumentos_existentes.append(instrumento_data['simbolo'])
-                print(f"⏭ Ya existe: {instrumento_data['simbolo']}")
-        
-        print(f"🔍 Paso 4: Guardando {len(instrumentos_nuevos)} nuevos...")
-        if instrumentos_nuevos:
-            db.session.bulk_save_objects(instrumentos_nuevos)
-            db.session.commit()
-            mensaje = f'Se agregaron {len(instrumentos_nuevos)} nuevos instrumentos. Ya existían: {len(instrumentos_existentes)}'
-            print(f" {mensaje}")
-            return jsonify({
-                'mensaje': mensaje,
-                'nuevos': len(instrumentos_nuevos),
-                'existentes': len(instrumentos_existentes),
-                'total_en_bd': count_antes + len(instrumentos_nuevos)
-            })
-        else:
-            mensaje = f'No se encontraron instrumentos nuevos para agregar. Ya existen {len(instrumentos_existentes)} instrumentos en la base de datos.'
-            print(f" {mensaje}")
-            return jsonify({
-                'mensaje': mensaje,
-                'nuevos': 0,
-                'existentes': len(instrumentos_existentes),
-                'total_en_bd': count_antes
-            })
-            
+                accion_para_precio = accion_existente
+                print(f" Futuro existente: {symbol} (ID: {accion_existente.id})")
+
+            # Crear registro de precio
+            if price is not None:
+                nuevo_precio = Precio_accion(
+                    accion_id=accion_para_precio.id,
+                    precio=float(price),
+                    fecha_hora=datetime.utcnow()
+                )
+                db.session.add(nuevo_precio)
+                precios_nuevos.append(nuevo_precio)
+                print(f"💰 Precio AGREGADO para {symbol}: ${price}")
+
+        print(f"🔍 Paso 4: Guardando {len(futuros_nuevos)} futuros y {len(precios_nuevos)} precios...")
+        db.session.commit()
+        print("✅ Commit ejecutado")
+
+        count_precios_despues = Precio_accion.query.count()
+        mensaje = f'Se agregaron {len(futuros_nuevos)} nuevos futuros y {len(precios_nuevos)} precios'
+
+        return jsonify({
+            'mensaje': mensaje,
+            'nuevos_futuros': len(futuros_nuevos),
+            'nuevos_precios': len(precios_nuevos),
+            'total_acciones': Accion.query.count(),
+            'total_precios': count_precios_despues
+        })
+
     except Exception as e:
-        print(f" ERROR: {str(e)}")
+        print(f"❌ ERROR: {str(e)}")
         import traceback
-        print(f" Traceback completo:")
         print(traceback.format_exc())
-        
-        try:
-            from flaskr import db
-            db.session.rollback()
-            print(" Rollback ejecutado")
-        except Exception as rollback_error:
-            print(f" Error en rollback: {rollback_error}")
-            
+        db.session.rollback()
+        print("✅ Rollback ejecutado")
         return jsonify({'error': str(e)}), 500
     
 
-@acciones_bp.route('/acciones', methods=['GET'])
+@futuros_bp.route('/acciones', methods=['GET'])
 def listar_acciones():
     try:
         from flaskr.models import Accion
@@ -97,7 +110,7 @@ def listar_acciones():
         return jsonify({'error': str(e)}), 500
 
 # Agregar una accion al portafolio del usuario (form de "Añadir accion" en /portfolio)
-@acciones_bp.route('/new-portfolio-stock', methods=['POST'])
+@futuros_bp.route('/new-portfolio-stock', methods=['POST'])
 def add_stock_to_portfolio():
     if 'user_id' not in session:
         return redirect(url_for('index.index'))
@@ -133,7 +146,7 @@ def add_stock_to_portfolio():
         db.session.rollback()
         return jsonify({'error': "Couldn't persist db"}), 500
 
-@acciones_bp.route('/get-user-stocks', methods=['GET'])
+@futuros_bp.route('/get-user-stocks', methods=['GET'])
 def get_user_stocks():
     if 'user_id' not in session:
         return redirect(url_for('index.index'))
@@ -146,7 +159,7 @@ def get_user_stocks():
         view = 'menu'
     return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view=view)
 
-@acciones_bp.route('/delete-user-stock/<int:usuario_accion_id>', methods=['DELETE'])
+@futuros_bp.route('/delete-user-stock/<int:usuario_accion_id>', methods=['DELETE'])
 def delete_user_stock(usuario_accion_id):
     if 'user_id' not in session:
         return redirect(url_for('index.index'))
@@ -167,7 +180,7 @@ def delete_user_stock(usuario_accion_id):
         db.session.rollback()
         return jsonify({'error': "Couldn't delete from db"}), 500
 
-@acciones_bp.route('/get-available-stocks', methods=['GET'])
+@futuros_bp.route('/get-available-stocks', methods=['GET'])
 def get_available_stocks():
     try:
         from flaskr.models import Accion
@@ -177,7 +190,7 @@ def get_available_stocks():
     except Exception as e:
         return jsonify({'error': "Couldn't get available stock"}), 500
 
-@acciones_bp.route('/edit-portfolio-stock', methods=['PATCH'])
+@futuros_bp.route('/edit-portfolio-stock', methods=['PATCH'])
 def edit_user_stock():
     if 'user_id' not in session:
         return redirect(url_for('index.index'))
@@ -208,7 +221,7 @@ def edit_user_stock():
         db.session.rollback()
         return jsonify({'error': "Couldn't persist db"}), 500
 
-@acciones_bp.route('/get-portfolio-summary', methods=['GET'])
+@futuros_bp.route('/get-portfolio-summary', methods=['GET'])
 def get_portfolio_summary():
     if 'user_id' not in session:
         return redirect(url_for('index.index'))
