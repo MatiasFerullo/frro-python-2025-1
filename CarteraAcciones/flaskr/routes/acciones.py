@@ -1,6 +1,5 @@
 ## ACA VAN LAS TODAS LAS RUTAS RELACIONADAS CON LAS ACCIONES
 from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
-from flaskr.services.pyrofex_service import obtener_acciones_desde_api
 from datetime import datetime
 from flask import Blueprint, jsonify
 from flaskr.models import Accion, Precio_accion
@@ -117,7 +116,7 @@ def add_stock_to_portfolio():
     
     user_id = session['user_id']
 
-    from flaskr.models import Accion, User, UsuarioAccion, db
+    from flaskr.models import Accion, Usuario, UsuarioAccion, db
 
     data = request.form
     fecha_hora = data.get('fecha_hora')
@@ -140,7 +139,7 @@ def add_stock_to_portfolio():
     try:
         db.session.add(nueva_usuario_accion)
         db.session.commit()
-        user = User.query.filter_by(id=user_id).first()
+        user = Usuario.query.filter_by(id=user_id).first()
         return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view='edit')
     except Exception as e:
         db.session.rollback()
@@ -152,8 +151,8 @@ def get_user_stocks():
         return redirect(url_for('index.index'))
     
     user_id = session['user_id']
-    from flaskr.models import User
-    user = User.query.filter_by(id=user_id).first()
+    from flaskr.models import Usuario
+    user = Usuario.query.filter_by(id=user_id).first()
     view = request.args.get('view')
     if view == None or view == '' or view not in ['menu', 'edit']:
         view = 'menu'
@@ -165,7 +164,7 @@ def delete_user_stock(usuario_accion_id):
         return redirect(url_for('index.index'))
     
     user_id = session['user_id']
-    from flaskr.models import UsuarioAccion, User, db
+    from flaskr.models import UsuarioAccion, Usuario, db
 
     usuario_accion = UsuarioAccion.query.filter_by(id=usuario_accion_id, user_id=user_id).first()
     if not usuario_accion:
@@ -174,7 +173,7 @@ def delete_user_stock(usuario_accion_id):
     try:
         db.session.delete(usuario_accion)
         db.session.commit()
-        user = User.query.filter_by(id=user_id).first()
+        user = Usuario.query.filter_by(id=user_id).first()
         return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view='edit')
     except Exception as e:
         db.session.rollback()
@@ -197,7 +196,7 @@ def edit_user_stock():
     
     user_id = session['user_id']
 
-    from flaskr.models import UsuarioAccion, User, UsuarioAccion, db
+    from flaskr.models import UsuarioAccion, Usuario, UsuarioAccion, db
 
     data = request.form
     usuario_accion_id = data['usuario_accion_id']
@@ -215,7 +214,7 @@ def edit_user_stock():
 
     try:
         db.session.commit()
-        user = User.query.filter_by(id=user_id).first()
+        user = Usuario.query.filter_by(id=user_id).first()
         return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view='edit')
     except Exception as e:
         db.session.rollback()
@@ -227,11 +226,49 @@ def get_portfolio_summary():
         return redirect(url_for('index.index'))
     
     user_id = session['user_id']
-    from flaskr.models import User
-    user = User.query.filter_by(id=user_id).first()
+    from flaskr.models import Usuario
+    user = Usuario.query.filter_by(id=user_id).first()
 
     sum = 0.0
     for usuario_accion in user.usuario_acciones:
         sum += (usuario_accion.cantidad * usuario_accion.precio_compra)
 
-    return render_template('htmx/portfolio-summary.html', usuario_acciones=user.usuario_acciones, sum=sum)
+    # TODO: Agregar cuánto aumentó (o disminuyó en negativo) el portfolio del usuario
+    # Este endpoint controla el pequeño resumen que aparece arriba de todo en la página principal
+    difference = 0.0
+    differencePercentage = 0.0
+
+    return render_template('htmx/portfolio-summary.html', sum=sum, difference=difference, differencePercentage=differencePercentage)
+
+@futuros_bp.route('/portfolio-chart-data', methods=['GET'])
+def portfolio_chart_data():
+    # TODO: Agregar el histórico del portafolio del usuario
+    # Este endpoint controla la gráfica que aparece arriba de todo en la página principal
+    # Labels tiene los valores del eje x
+    # Values tiene los valores del eje y correspondientes a cáda valor del eje x
+    # Por esta razón ambas listas deben tener la misma cantidad de elementos
+    data = {
+        "labels": ["10/8", "11/8", "12/8", "13/8", "14/8", "15/8", "16/8", "17/8", "18/8", "19/8", "20/8"],
+        "values": [120, 118, 121, 123, 125, 127, 130, 128, 132, 135, 100]
+    }
+    return jsonify(data)
+
+@futuros_bp.route('/portfolio-composition-chart-data', methods=['GET'])
+def portfolio_composition_chart_data():
+    if 'user_id' not in session:
+        return redirect(url_for('index.index'))
+
+    user_id = session['user_id']
+    from flaskr.models import Usuario
+    user = Usuario.query.filter_by(id=user_id).first()
+
+    labels = []
+    values = []
+    for usuario_accion in user.usuario_acciones:
+        labels.append(usuario_accion.accion.simbolo)
+        values.append(usuario_accion.cantidad * usuario_accion.precio_compra)
+    data = {
+        "labels": labels,
+        "values": values
+    }
+    return jsonify(data)
