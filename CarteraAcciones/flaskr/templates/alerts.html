@@ -18,6 +18,36 @@
       @view-transition {
         navigation: auto; /**/
       }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+      }
+
+      @keyframes fade-out {
+        to {
+          opacity: 0;
+        }
+      }
+
+      @keyframes slide-from-right {
+        from {
+          transform: translateX(30px);
+        }
+      }
+
+      @keyframes slide-to-left {
+        to {
+          transform: translateX(-30px);
+        }
+      }
+
+      ::view-transition-new(alertFormOpt) {
+        animation:
+          210ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+          300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+      }
     </style>
   </head>
   <body class="overflow-x-hidden bg-[#fbfbfb] select-none">
@@ -25,43 +55,595 @@
       <div
         class="w-full flex-1 items-center border-slate-200 bg-white lg:max-w-4xl lg:border-x-1"
       >
-        <div
-          class="flex flex-row items-center gap-2 bg-white p-4 lg:px-6 lg:pt-6"
-          style="view-transition-name: alerts-bar"
-        >
-          <a
-            class="flex cursor-pointer rounded-sm p-1 text-gray-400 transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
-            href="/"
+        <!-- Alerts -->
+        <div id="alert-view">
+          <div
+            class="flex flex-row items-center gap-2 bg-white p-4 lg:px-6 lg:pt-6"
+            style="view-transition-name: alerts-bar"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+            <a
+              class="flex cursor-pointer rounded-sm p-1 text-gray-400 transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
+              href="/"
             >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M15 6l-6 6l6 6" />
-            </svg>
-          </a>
-          <h1
-            class="text-xl leading-none sm:text-2xl"
-            style="view-transition-name: alerts-title"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M15 6l-6 6l6 6" />
+              </svg>
+            </a>
+            <h1
+              class="text-xl leading-none sm:text-2xl"
+              style="view-transition-name: alerts-title"
+            >
+              Alertas
+            </h1>
+          </div>
+          <div
+            class="px-4 pb-4 lg:px-6 lg:pb-6"
+            style="view-transition-name: alerts-content"
           >
-            Alertas
-          </h1>
+            <div
+              class="divide-y divide-gray-200"
+              hx-get=""
+              hx-trigger="load"
+              hx-swap="innerHTML"
+              id="alert-list"
+            >
+              <!-- <div class="flex w-full animate-pulse rounded-sm bg-gray-200 p-1 text-transparent"></div> -->
+              <div>
+                <div
+                  class="flex w-full p-1"
+                  data-anim-name="edit-stock-form-bar-{{ 1 }}"
+                >
+                  <div class="flex w-full flex-row justify-between">
+                    <div class="flex w-full flex-col items-start">
+                      <h3
+                        class="font-semibold"
+                        data-anim-name="edit-stock-form-symbol-{{ 1 }}"
+                      >
+                        Precio Mínimo
+                      </h3>
+                      <div
+                        class="flex flex-row items-center gap-1 text-gray-400"
+                      >
+                        <p>AL30/OCT25 - $1.000,00</p>
+                      </div>
+                    </div>
+                    <div class="flex flex-row items-center gap-2">
+                      <button
+                        class="flex cursor-pointer rounded-sm bg-slate-600 p-1 text-white transition active:scale-90"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                          <path
+                            d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"
+                          />
+                          <path d="M13.5 6.5l4 4" />
+                        </svg></button
+                      ><button
+                        class="flex cursor-pointer rounded-sm bg-[#eb3837] p-1 text-white transition active:scale-90"
+                        hx-delete=""
+                        hx-target="#alert-list"
+                        hx-swap="innerHTML"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                          <path d="M4 7l16 0" />
+                          <path d="M10 11l0 6" />
+                          <path d="M14 11l0 6" />
+                          <path
+                            d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"
+                          />
+                          <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div data-anim-name="edit-stock-form-content-{{ 1 }}"></div>
+              </div>
+            </div>
+            <div data-anim-name="alert-form-content" id="alert-form-content">
+              <button
+                class="mt-4 flex w-full cursor-pointer justify-center rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
+                data-anim-name="alert-form-bar"
+                onclick="openPopup('add')"
+              >
+                <div class="flex flex-row justify-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    data-anim-name="alert-form-back"
+                    id="alert-form-back"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M12 5l0 14" />
+                    <path d="M5 12l14 0" />
+                  </svg>
+                  <label
+                    class="cursor-pointer"
+                    data-anim-name="alert-form-title"
+                    id="alert-form-title"
+                    >Añadir alerta</label
+                  >
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
-        <div
-          class="px-4 pb-4 lg:px-6 lg:pb-6"
-          style="view-transition-name: alerts-content"
-        >
-          <p>*Contenido*</p>
+        <!-- Alert form -->
+        <div hidden id="alert-form-view">
+          <div
+            class="flex flex-row items-center gap-2 bg-white p-4 lg:px-6 lg:pt-6"
+            style="view-transition-name: alert-form-bar"
+          >
+            <button
+              id="alert-form-back-btn"
+              class="flex cursor-pointer rounded-sm p-1 text-gray-400 transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
+              style="view-transition-name: alert-form-back"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M18 6l-12 12" />
+                <path d="M6 6l12 12" />
+              </svg>
+            </button>
+            <h1
+              class="text-xl leading-none sm:text-2xl"
+              style="view-transition-name: alert-form-title"
+            >
+              Añadir alerta
+            </h1>
+          </div>
+          <div
+            class="px-4 pb-4 lg:px-6 lg:pb-6"
+            style="view-transition-name: alert-form-content"
+          >
+            <div id="alert-form-opt-0">
+              <div class="flex flex-col gap-2">
+                <button
+                  class="cursor-pointer rounded-sm p-4 text-left transition hover:bg-gray-200 active:scale-90 active:bg-gray-200 lg:p-6"
+                  type="button"
+                  onclick="setAlertFormOpt(1)"
+                >
+                  <div
+                    class="flex flex-row items-center justify-between gap-2 [&_svg]:shrink-0 [&_svg]:text-gray-400"
+                  >
+                    <p>Precio Mínimo/Máximo de un Futuro</p>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M9 6l6 6l-6 6" />
+                    </svg>
+                  </div>
+                </button>
+                <button
+                  class="cursor-pointer rounded-sm p-4 text-left transition hover:bg-gray-200 active:scale-90 active:bg-gray-200 lg:p-6"
+                  type="button"
+                  onclick="setAlertFormOpt(2)"
+                >
+                  <div
+                    class="flex flex-row items-center justify-between gap-2 [&_svg]:shrink-0 [&_svg]:text-gray-400"
+                  >
+                    <p>Pérdida o Ganancia Mayor a un Porcentaje</p>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M9 6l6 6l-6 6" />
+                    </svg>
+                  </div>
+                </button>
+                <button
+                  class="cursor-pointer rounded-sm p-4 text-left transition hover:bg-gray-200 active:scale-90 active:bg-gray-200 lg:p-6"
+                  type="button"
+                  onclick="setAlertFormOpt(3)"
+                >
+                  <div
+                    class="flex flex-row items-center justify-between gap-2 [&_svg]:shrink-0 [&_svg]:text-gray-400"
+                  >
+                    <p>Cambios Súbitos en el Valor del Portafolio</p>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M9 6l6 6l-6 6" />
+                    </svg>
+                  </div>
+                </button>
+              </div>
+            </div>
+            <div id="alert-form-opt-1" hidden>
+              <p class="mt-2 mb-4 text-lg sm:text-xl">
+                Precio Mínimo/Máximo de un Futuro
+              </p>
+              <form
+                class="px-[2px]"
+                hx-post=""
+                hx-swap="innerHTML"
+                hx-target="#alert-list"
+                onsubmit="history.back()"
+              >
+                <p class="mb-4 flex flex-col">
+                  <label class="mb-1 text-slate-500" for="element"
+                    >Futuro del portfolio</label
+                  >
+                  <select
+                    class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                    id="element"
+                    name="element_id"
+                    required
+                    hx-get=""
+                    hx-trigger="load"
+                    hx-swap="innerHTML"
+                    hx-target="this"
+                  ></select>
+                </p>
+                <p class="mb-4 flex flex-col">
+                  <label class="mb-1 text-slate-500" for="type"
+                    >Disparador</label
+                  >
+                  <select
+                    class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                    id="type"
+                    name="type"
+                    required
+                  >
+                    <option value="min">Mínimo</option>
+                    <option value="max">Máximo</option>
+                  </select>
+                </p>
+                <p class="mb-4 flex flex-col">
+                  <label class="mb-1 text-slate-500" for="price"
+                    >Valor (ARS)</label
+                  >
+                  <input
+                    class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                    type="number"
+                    id="price"
+                    min="0.01"
+                    step="0.01"
+                    value="0.01"
+                    name="price"
+                    required
+                  />
+                </p>
+                <button
+                  class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
+                  type="submit"
+                >
+                  Guardar
+                </button>
+              </form>
+            </div>
+            <div id="alert-form-opt-2" hidden>
+              <p class="mt-2 mb-4 text-lg sm:text-xl">
+                Pérdida o Ganancia Mayor a un Porcentaje
+              </p>
+              <form
+                class="px-[2px]"
+                hx-post=""
+                hx-swap="innerHTML"
+                hx-target="#alert-list"
+                onsubmit="history.back()"
+              >
+                <p class="mb-4 flex flex-col">
+                  <label class="mb-1 text-slate-500" for="type">Elemento</label>
+                  <select
+                    class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                    id="type"
+                    name="type"
+                    value="Portfolio"
+                    required
+                  >
+                    <option value="Portfolio">Portafolio completo</option>
+                  </select>
+                </p>
+                <p class="mb-4 flex flex-col">
+                  <label class="mb-1 text-slate-500" for="type"
+                    >Disparador</label
+                  >
+                  <select
+                    class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                    id="type"
+                    name="type"
+                    required
+                  >
+                    <option value="loss">Pérdida</option>
+                    <option value="gain">Ganancia</option>
+                  </select>
+                </p>
+                <p class="mb-4 flex flex-col">
+                  <label class="mb-1 text-slate-500" for="percentage"
+                    >Porcentaje</label
+                  >
+                  <input
+                    class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                    type="number"
+                    id="percentage"
+                    min="1"
+                    max="100"
+                    step="1"
+                    name="percentage"
+                    value="1"
+                    required
+                  />
+                </p>
+                <button
+                  class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
+                  type="submit"
+                >
+                  Guardar
+                </button>
+              </form>
+            </div>
+            <div id="alert-form-opt-3" hidden>
+              <p class="mt-2 mb-4 text-lg sm:text-xl">
+                Cambios Súbitos en el Valor del Portafolio
+              </p>
+              <form
+                class="px-[2px]"
+                hx-post=""
+                hx-swap="innerHTML"
+                hx-target="#alert-list"
+                onsubmit="history.back()"
+              >
+                <p class="mb-4 flex flex-col">
+                  <label class="mb-1 text-slate-500" for="threshold"
+                    >Umbral de variación</label
+                  >
+                  <input
+                    class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                    type="number"
+                    id="threshold"
+                    name="threshold"
+                    min="0.01"
+                    max="0.99"
+                    step="0.01"
+                    value="0.03"
+                    required
+                  />
+                </p>
+                <button
+                  class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
+                  type="submit"
+                >
+                  Guardar
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <!-- Edit alert form -->
+        <div hidden id="edit-alert-form-view">
+          <div
+            class="flex flex-row items-center gap-2 bg-white p-4 lg:px-6 lg:pt-6"
+            id="edit-alert-form-bar"
+            style="view-transition-name: edit-alert-form-bar"
+          >
+            <button
+              id="edit-alert-form-back-btn"
+              class="flex cursor-pointer rounded-sm p-1 text-gray-400 transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M18 6l-12 12" />
+                <path d="M6 6l12 12" />
+              </svg>
+            </button>
+            <h1 class="text-xl leading-none sm:text-2xl">Editar alerta</h1>
+          </div>
+          <div
+            class="px-4 pb-4 lg:px-6 lg:pb-6"
+            id="edit-alert-form-content"
+            style="view-transition-name: edit-alert-form-content"
+          >
+            <form
+              class="px-[2px]"
+              hx-patch=""
+              hx-swap="innerHTML"
+              hx-target="#alert-list"
+              onsubmit="history.back()"
+            >
+              <button
+                class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
+                type="submit"
+              >
+                Guardar
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
+    <script>
+      const alertView = document.getElementById("alert-view");
+      const alertFormView = document.getElementById("alert-form-view");
+      const editAlertFormView = document.getElementById("edit-alert-form-view");
+      const backButton = document.getElementById("alert-form-back-btn");
+      const editBackButton = document.getElementById(
+        "edit-alert-form-back-btn",
+      );
+      const alertFormOpt0 = document.getElementById("alert-form-opt-0");
+
+      let isPopupOpen = false;
+      let currentPopup = null; // 'add' | 'edit'
+      let alertFormOpt = 0;
+
+      const getAnimElements = () =>
+        document.querySelectorAll("[data-anim-name]");
+
+      const applyViewTransitionNames = () =>
+        getAnimElements().forEach(
+          (el) => (el.style.viewTransitionName = el.dataset.animName),
+        );
+
+      const removeViewTransitionNames = () =>
+        getAnimElements().forEach((el) => (el.style.viewTransitionName = ""));
+
+      const toggleViews = async (targetView) => {
+        if (!document.startViewTransition) {
+          alertView.hidden = true;
+          alertFormView.hidden = true;
+          editAlertFormView.hidden = true;
+          targetView.hidden = false;
+          return;
+        }
+
+        const transition = document.startViewTransition(() => {
+          alertView.hidden = true;
+          alertFormView.hidden = true;
+          editAlertFormView.hidden = true;
+          targetView.hidden = false;
+        });
+
+        await transition.finished;
+        removeViewTransitionNames();
+      };
+
+      const openPopup = async (type) => {
+        if (isPopupOpen) return;
+
+        alertFormOpt = 0;
+        alertFormOpt0.hidden = false;
+        document.getElementById("alert-form-opt-1").hidden = true;
+        document.getElementById("alert-form-opt-2").hidden = true;
+        document.getElementById("alert-form-opt-3").hidden = true;
+
+        isPopupOpen = true;
+        currentPopup = type;
+        applyViewTransitionNames();
+
+        history.pushState({ popup: type }, "", "");
+
+        const targetView = type === "edit" ? editAlertFormView : alertFormView;
+        await toggleViews(targetView);
+      };
+
+      const openEditPopup = async (id, symbol, amount, date, price) => {
+        await openPopup("edit");
+      };
+
+      const closePopup = async () => {
+        if (!isPopupOpen) return;
+
+        isPopupOpen = false;
+        currentPopup = null;
+        applyViewTransitionNames();
+        await toggleViews(alertView);
+      };
+
+      window.addEventListener("popstate", async (event) => {
+        if (isPopupOpen) {
+          await closePopup();
+          alertFormOpt = 0;
+        }
+      });
+
+      backButton.addEventListener("click", async () => {
+        history.back();
+      });
+
+      editBackButton.addEventListener("click", async () => {
+        history.back();
+      });
+
+      const setAlertFormOpt = async (num) => {
+        alertFormOpt = num;
+        console.log(alertFormOpt);
+        const selectedFormOpt = document.getElementById(
+          "alert-form-opt-" + num,
+        );
+        selectedFormOpt.style.viewTransitionName = "alertFormOpt";
+        const transition = document.startViewTransition(() => {
+          alertFormOpt0.hidden = true;
+          selectedFormOpt.hidden = false;
+        });
+
+        await transition.finished;
+        selectedFormOpt.style.viewTransitionName = "";
+      };
+    </script>
   </body>
 </html>
