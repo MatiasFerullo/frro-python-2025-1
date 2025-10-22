@@ -1,9 +1,33 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Cartera de Acciones</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='favicon-96x96.png') }}"
+      sizes="96x96"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="{{ url_for('static', filename='favicon.svg') }}"
+    />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="{{ url_for('static', filename='apple-touch-icon.png') }}"
+    />
+    <link
+      rel="manifest"
+      href="{{ url_for('static', filename='site.webmanifest') }}"
+    />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, user-scalable=no"
@@ -70,7 +94,7 @@
               id="stock-list"
             >
               <div
-                class="flex w-full p-1 text-transparent bg-gray-200 animate-pulse rounded-sm"
+                class="flex w-full animate-pulse rounded-sm bg-gray-200 p-1 text-transparent"
               >
                 <div class="flex w-full flex-row justify-between">
                   <div class="flex w-full flex-col items-start">
@@ -358,7 +382,7 @@
       const editStockFormView = document.getElementById("edit-stock-form-view");
       const backButton = document.getElementById("stock-form-back-btn");
       const editBackButton = document.getElementById(
-        "edit-stock-form-back-btn"
+        "edit-stock-form-back-btn",
       );
 
       let isPopupOpen = false;
@@ -369,7 +393,7 @@
 
       const applyViewTransitionNames = () =>
         getAnimElements().forEach(
-          (el) => (el.style.viewTransitionName = el.dataset.animName)
+          (el) => (el.style.viewTransitionName = el.dataset.animName),
         );
 
       const removeViewTransitionNames = () =>

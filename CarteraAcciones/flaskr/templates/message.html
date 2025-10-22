@@ -1,9 +1,33 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>{{ headerText }}</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='favicon-96x96.png') }}"
+      sizes="96x96"
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="{{ url_for('static', filename='favicon.svg') }}"
+    />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="{{ url_for('static', filename='apple-touch-icon.png') }}"
+    />
+    <link
+      rel="manifest"
+      href="{{ url_for('static', filename='site.webmanifest') }}"
+    />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, user-scalable=no"
@@ -29,7 +53,7 @@
           <p>{{ bodyText }}</p>
           <a
             href="{{ buttonRedirect }}"
-            class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90 flex justify-center"
+            class="mt-4 flex w-full cursor-pointer justify-center rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
           >
             {{ buttonText }}
           </a>
