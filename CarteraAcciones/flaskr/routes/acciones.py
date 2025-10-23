@@ -151,12 +151,33 @@ def get_user_stocks():
         return redirect(url_for('index.index'))
     
     user_id = session['user_id']
-    from flaskr.models import Usuario
+    from flaskr.models import Usuario, Precio_accion
     user = Usuario.query.filter_by(id=user_id).first()
     view = request.args.get('view')
     if view == None or view == '' or view not in ['menu', 'edit']:
         view = 'menu'
-    return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view=view)
+    
+    latest_prices = {}
+    first_prices = {}
+
+    for usuario_accion in user.usuario_acciones:
+        latest_price_record = Precio_accion.query.filter_by(accion_id=usuario_accion.accion_id).order_by(Precio_accion.fecha_hora.desc()).first()
+        if latest_price_record:
+            latest_prices[usuario_accion.id] = latest_price_record.precio
+        else:
+            latest_prices[usuario_accion.id] = 0.0
+
+        first_price_record = Precio_accion.query.filter(
+            Precio_accion.accion_id == usuario_accion.accion_id,
+            Precio_accion.fecha_hora <= usuario_accion.fecha_hora
+        ).order_by(Precio_accion.fecha_hora.desc()).first()
+
+        if first_price_record:
+            first_prices[usuario_accion.id] = first_price_record.precio
+        else:
+            first_prices[usuario_accion.id] = 0.0
+
+    return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view=view, latest_prices=latest_prices, first_prices=first_prices)
 
 @futuros_bp.route('/delete-user-stock/<int:usuario_accion_id>', methods=['DELETE'])
 def delete_user_stock(usuario_accion_id):
@@ -226,19 +247,30 @@ def get_portfolio_summary():
         return redirect(url_for('index.index'))
     
     user_id = session['user_id']
-    from flaskr.models import Usuario
+    from flaskr.models import Usuario, Precio_accion
     user = Usuario.query.filter_by(id=user_id).first()
 
-    sum = 0.0
+    gain_sum = 0.0
+    initial_investment = 0.0
     for usuario_accion in user.usuario_acciones:
-        sum += (usuario_accion.cantidad * usuario_accion.precio_compra)
+        accion_id = usuario_accion.accion_id
+        latest_price_record = Precio_accion.query.filter_by(accion_id=accion_id).order_by(Precio_accion.fecha_hora.desc()).first()
+        if latest_price_record:
+            latest_price = latest_price_record.precio
+            gain_sum += (usuario_accion.cantidad * latest_price)
+        first_price_record = Precio_accion.query.filter(
+            Precio_accion.accion_id == usuario_accion.accion_id,
+            Precio_accion.fecha_hora <= usuario_accion.fecha_hora
+        ).order_by(Precio_accion.fecha_hora.desc()).first()
+        if first_price_record:
+            initial_investment += (usuario_accion.cantidad * first_price_record.precio)
 
-    # TODO: Agregar cuánto aumentó (o disminuyó en negativo) el portfolio del usuario
-    # Este endpoint controla el pequeño resumen que aparece arriba de todo en la página principal
-    difference = 0.0
+    difference = gain_sum - initial_investment
     differencePercentage = 0.0
+    if initial_investment != 0:
+        differencePercentage = round((difference / initial_investment) * 100, 2)
 
-    return render_template('htmx/portfolio-summary.html', sum=sum, difference=difference, differencePercentage=differencePercentage)
+    return render_template('htmx/portfolio-summary.html', gain_sum=gain_sum, difference=difference, differencePercentage=differencePercentage)
 
 @futuros_bp.route('/portfolio-chart-data', methods=['GET'])
 def portfolio_chart_data():
@@ -259,14 +291,18 @@ def portfolio_composition_chart_data():
         return redirect(url_for('index.index'))
 
     user_id = session['user_id']
-    from flaskr.models import Usuario
+    from flaskr.models import Usuario, Precio_accion
     user = Usuario.query.filter_by(id=user_id).first()
 
     labels = []
     values = []
     for usuario_accion in user.usuario_acciones:
         labels.append(usuario_accion.accion.simbolo)
-        values.append(usuario_accion.cantidad * usuario_accion.precio_compra)
+        latest_price_record = Precio_accion.query.filter_by(accion_id=usuario_accion.accion_id).order_by(Precio_accion.fecha_hora.desc()).first()
+        if latest_price_record:
+            values.append(usuario_accion.cantidad * latest_price_record.precio)
+        else:
+            values.append(0.0)
     data = {
         "labels": labels,
         "values": values

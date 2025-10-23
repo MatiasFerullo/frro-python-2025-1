@@ -2,21 +2,52 @@
   {% if view == "menu" %}
     {% for usuario_accion in usuario_acciones %}
       <div>
+        {% set first = first_prices[usuario_accion.id] %}
+        {% set latest = latest_prices[usuario_accion.id] %}
+        {% if first != 0 %}
+          {% set pct = (latest - first) / first * 100 %}
+        {% else %}
+          {% set pct = 0 %}
+        {% endif %}
         <button
           class="flex w-full cursor-pointer rounded-sm p-1 transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
         >
           <div class="flex w-full flex-row justify-between">
-            <div class="flex flex-col items-start">
-              <h3 class="font-semibold">{{ usuario_accion.accion.simbolo }}
-              </h3>
-              <p class="text-gray-400">{{ usuario_accion.cantidad }} x ${{ usuario_accion.precio_compra }} ARS</p>
+            <div class="flex flex-col items-start w-full">
+              <h3 class="font-semibold">{{ usuario_accion.accion.simbolo }}</h3>
+              <div class="text-gray-400 flex flex-row items-center gap-1 text-left w-full overflow-hidden">
+                <div class="flex items-center gap-1 min-w-0 overflow-hidden">
+                  <p class="whitespace-nowrap overflow-hidden text-ellipsis">
+                    {{ usuario_accion.cantidad }} x
+                  </p>
+                  <p class="whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
+                    ${{ first }}
+                  </p>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="flex-shrink-0 hidden sm:block"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M5 12l14 0" />
+                    <path d="M15 16l4 -4" />
+                    <path d="M15 8l4 4" />
+                  </svg>
+                  <p class="whitespace-nowrap overflow-hidden text-ellipsis">${{ latest }}</p>
+                  <span class="flex-shrink-0">ARS</span>
+                </div>
+              </div>
             </div>
             <div class="flex flex-col items-end">
-              <h3 class="font-semibold">${{ usuario_accion.cantidad * usuario_accion.precio_compra }} <span class="text-gray-400 font-normal">ARS</span></h3>
-              <div
-                class="flex flex-row items-center gap-1 rounded-full bg-green-100 px-2 text-green-600"
-              >
-                <p class="font-semibold">2,64% (IMPLEMENTAR)</p>
+              <div class="flex items-center gap-1 min-w-0 overflow-hidden">
+                <p class="whitespace-nowrap overflow-hidden text-ellipsis text-gray-400 hidden sm:block">{{ usuario_accion.cantidad * first }}</p>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -27,11 +58,69 @@
                   stroke-width="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
+                  class="flex-shrink-0 hidden sm:block text-gray-400"
                 >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M3 17l6 -6l4 4l8 -8" />
-                  <path d="M14 7l7 0l0 7" />
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M5 12l14 0" />
+                  <path d="M15 16l4 -4" />
+                  <path d="M15 8l4 4" />
                 </svg>
+                <p class="font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
+                  ${{ usuario_accion.cantidad * latest }}
+                </p>
+                <span class="font-normal text-gray-400 flex-shrink-0">ARS</span>
+              </div>
+              <div
+                {% if pct > 0 %}
+                  class="flex flex-row items-center gap-1 rounded-full bg-green-100 px-2 text-green-600"
+                {% elif pct < 0 %}
+                  class="flex flex-row items-center gap-1 rounded-full bg-red-100 px-2 text-red-600"
+                {% else %}
+                  class="flex flex-row items-center gap-1 rounded-full bg-gray-100 px-2 text-gray-600"
+                {% endif %}
+              >
+                <p class="font-semibold">
+                  {% if pct > 0 %}
+                    +{{ pct|round(2) }}%
+                  {% elif pct < 0 %}
+                    {{ pct|round(2) }}%
+                  {% else %}
+                    {{ pct|round(2) }}%
+                  {% endif %}
+                </p>
+                {% if pct > 0 %}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M3 17l6 -6l4 4l8 -8" />
+                    <path d="M14 7l7 0l0 7" />
+                  </svg>
+                {% elif pct < 0 %}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M3 7l6 6l4 -4l8 8" />
+                    <path d="M21 10l0 7l-7 0" />
+                  </svg>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -40,17 +129,30 @@
     {% endfor %}
   {% elif view == "edit" %}
     {% for usuario_accion in usuario_acciones %}
+      {% set first = first_prices[usuario_accion.id] %}
+      {% set latest = latest_prices[usuario_accion.id] %}
       <div>
-        <div class="flex w-full p-1" data-anim-name="edit-stock-form-bar-{{ usuario_accion.id }}">
+        <div
+          class="flex w-full p-1"
+          data-anim-name="edit-stock-form-bar-{{ usuario_accion.id }}"
+        >
           <div class="flex w-full flex-row justify-between">
             <div class="flex w-full flex-col items-start">
-              <h3 class="font-semibold" data-anim-name="edit-stock-form-symbol-{{ usuario_accion.id }}">{{ usuario_accion.accion.simbolo }}</h3>
+              <h3
+                class="font-semibold"
+                data-anim-name="edit-stock-form-symbol-{{ usuario_accion.id }}"
+              >
+                {{ usuario_accion.accion.simbolo }}
+              </h3>
               <div class="flex flex-row items-center gap-1 text-gray-400">
                 <p>
-                    {{ usuario_accion.cantidad }} x ${{ usuario_accion.precio_compra }} ARS
+                  {{ usuario_accion.cantidad }} x ${{ first }}
+                  ARS
                 </p>
                 <p>-</p>
-                <p class="text-xs">{{ usuario_accion.fecha_hora.strftime('%d/%m/%Y') }}</p>
+                <p class="text-xs">
+                  {{ usuario_accion.fecha_hora.strftime('%d/%m/%Y') }}
+                </p>
               </div>
             </div>
             <div class="flex flex-row items-center gap-2">
@@ -106,7 +208,7 @@
     {% endfor %}
   {% endif %}
 {% else %}
-  <p class="rounded-sm bg-gray-200 p-4 text-center text-gray-600 lg:p-6">
-    No hay acciones que mostrar
-  </p>
+<p class="rounded-sm bg-gray-200 p-4 text-center text-gray-600 lg:p-6">
+  No hay futuros que mostrar
+</p>
 {% endif %}
