@@ -40,6 +40,20 @@
     />
     <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
     <script>
+      function formatPrice(value) {
+        let isInt = Number.isInteger(value);
+        let formatted;
+        if (isInt) {
+          formatted = value.toLocaleString("de-DE");
+        } else {
+          formatted = value.toLocaleString("de-DE", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+        }
+        return formatted.replace(/\./g, ".").replace(",", ",");
+      }
+
       async function initChart() {
         const stockChart = document
           .getElementById("stockChart")
@@ -121,7 +135,14 @@
             responsive: true,
             plugins: {
               legend: { display: false },
-              tooltip: { enabled: tooltipsEnabled },
+              tooltip: {
+                enabled: tooltipsEnabled,
+                callbacks: {
+                  label: function (context) {
+                    return "$" + formatPrice(context.parsed);
+                  },
+                },
+              },
             },
           },
         });

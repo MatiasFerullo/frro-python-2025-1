@@ -21,6 +21,18 @@ def create_app(test_config=None):
     
     db.init_app(app)
     
+    @app.template_filter('format_price')
+    def format_price(value):
+        try:
+            value = float(value)
+            if value.is_integer():
+                formatted = f"{int(value):,}"
+            else:
+                formatted = f"{value:,.2f}"
+            formatted = formatted.replace(",", "X").replace(".", ",").replace("X", ".")
+            return formatted
+        except (ValueError, TypeError):
+            return value
    
     with app.app_context():
         from flaskr import models 

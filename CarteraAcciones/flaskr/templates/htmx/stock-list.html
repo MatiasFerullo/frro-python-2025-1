@@ -21,7 +21,7 @@
                     {{ usuario_accion.cantidad }} x
                   </p>
                   <p class="whitespace-nowrap overflow-hidden text-ellipsis hidden sm:block">
-                    ${{ first }}
+                    ${{ first | format_price }}
                   </p>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -40,14 +40,14 @@
                     <path d="M15 16l4 -4" />
                     <path d="M15 8l4 4" />
                   </svg>
-                  <p class="whitespace-nowrap overflow-hidden text-ellipsis">${{ latest }}</p>
+                  <p class="whitespace-nowrap overflow-hidden text-ellipsis">${{ latest | format_price }}</p>
                   <span class="flex-shrink-0">ARS</span>
                 </div>
               </div>
             </div>
             <div class="flex flex-col items-end">
               <div class="flex items-center gap-1 min-w-0 overflow-hidden">
-                <p class="whitespace-nowrap overflow-hidden text-ellipsis text-gray-400 hidden sm:block">{{ usuario_accion.cantidad * first }}</p>
+                <p class="whitespace-nowrap overflow-hidden text-ellipsis text-gray-400 hidden sm:block">${{ (usuario_accion.cantidad * first) | format_price }}</p>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -66,7 +66,7 @@
                   <path d="M15 8l4 4" />
                 </svg>
                 <p class="font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
-                  ${{ usuario_accion.cantidad * latest }}
+                  ${{ (usuario_accion.cantidad * latest) | format_price }}
                 </p>
                 <span class="font-normal text-gray-400 flex-shrink-0">ARS</span>
               </div>
@@ -146,7 +146,7 @@
               </h3>
               <div class="flex flex-row items-center gap-1 text-gray-400">
                 <p>
-                  {{ usuario_accion.cantidad }} x ${{ first }}
+                  {{ usuario_accion.cantidad }} x ${{ first | format_price }}
                   ARS
                 </p>
                 <p>-</p>

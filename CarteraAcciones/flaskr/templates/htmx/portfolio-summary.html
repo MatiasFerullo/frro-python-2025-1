@@ -1,12 +1,12 @@
 <div class="flex flex-col">
   <div class="flex flex-row items-end gap-1">
-    <h1 class="text-3xl font-semibold">${{ gain_sum }}</h1>
+    <h1 class="text-3xl font-semibold">${{ gain_sum | format_price }}</h1>
     <span class="text-2xl text-gray-400">ARS</span>
   </div>
   <div class="flex gap-2">
     <div class="flex flex-row gap-1">
       <p class="font-semibold">
-        {{ "-" if difference < 0 else "+"}}${{ difference | abs }}
+        {{ "-" if difference < 0 else "+"}}${{ difference | abs | format_price }}
       </p>
       <p class="text-gray-400">ARS</p>
     </div>
