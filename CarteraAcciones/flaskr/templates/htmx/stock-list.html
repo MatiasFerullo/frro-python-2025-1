@@ -130,7 +130,6 @@
   {% elif view == "edit" %}
     {% for usuario_accion in usuario_acciones %}
       {% set first = first_prices[usuario_accion.id] %}
-      {% set latest = latest_prices[usuario_accion.id] %}
       <div>
         <div
           class="flex w-full p-1"

@@ -107,6 +107,35 @@ def listar_acciones():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+def get_first_prices(user):
+    from flaskr.models import Precio_accion
+    first_prices = {}
+
+    for usuario_accion in user.usuario_acciones:
+
+        first_price_record = Precio_accion.query.filter(
+            Precio_accion.accion_id == usuario_accion.accion_id,
+            Precio_accion.fecha_hora <= usuario_accion.fecha_hora
+        ).order_by(Precio_accion.fecha_hora.desc()).first()
+
+        if first_price_record:
+            first_prices[usuario_accion.id] = first_price_record.precio
+        else:
+            first_prices[usuario_accion.id] = 0.0
+    return first_prices
+
+def get_latest_prices(user):
+    from flaskr.models import Precio_accion
+    latest_prices = {}
+
+    for usuario_accion in user.usuario_acciones:
+        latest_price_record = Precio_accion.query.filter_by(accion_id=usuario_accion.accion_id).order_by(Precio_accion.fecha_hora.desc()).first()
+        if latest_price_record:
+            latest_prices[usuario_accion.id] = latest_price_record.precio
+        else:
+            latest_prices[usuario_accion.id] = 0.0
+    return latest_prices
 
 # Agregar una accion al portafolio del usuario (form de "Añadir accion" en /portfolio)
 @futuros_bp.route('/new-portfolio-stock', methods=['POST'])
@@ -122,25 +151,28 @@ def add_stock_to_portfolio():
     fecha_hora = data.get('fecha_hora')
     accion_id = data['accion_id']
     cantidad = data['cantidad']
-    precio_compra = data['precio_compra']
 
     accion = Accion.query.filter_by(id=accion_id).first()
     if not accion:
         return jsonify({'error': 'Acción no encontrada'}), 404
 
+    # TODO: Quitar precio_compra de la DB
     nueva_usuario_accion = UsuarioAccion(
         user_id=user_id,
         accion_id=accion_id,
         fecha_hora=fecha_hora,
         cantidad=cantidad,
-        precio_compra=precio_compra
+        precio_compra=1
     )
 
     try:
         db.session.add(nueva_usuario_accion)
         db.session.commit()
         user = Usuario.query.filter_by(id=user_id).first()
-        return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view='edit')
+
+        first_prices = get_first_prices(user)
+                
+        return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, first_prices=first_prices, view='edit')
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': "Couldn't persist db"}), 500
@@ -157,25 +189,8 @@ def get_user_stocks():
     if view == None or view == '' or view not in ['menu', 'edit']:
         view = 'menu'
     
-    latest_prices = {}
-    first_prices = {}
-
-    for usuario_accion in user.usuario_acciones:
-        latest_price_record = Precio_accion.query.filter_by(accion_id=usuario_accion.accion_id).order_by(Precio_accion.fecha_hora.desc()).first()
-        if latest_price_record:
-            latest_prices[usuario_accion.id] = latest_price_record.precio
-        else:
-            latest_prices[usuario_accion.id] = 0.0
-
-        first_price_record = Precio_accion.query.filter(
-            Precio_accion.accion_id == usuario_accion.accion_id,
-            Precio_accion.fecha_hora <= usuario_accion.fecha_hora
-        ).order_by(Precio_accion.fecha_hora.desc()).first()
-
-        if first_price_record:
-            first_prices[usuario_accion.id] = first_price_record.precio
-        else:
-            first_prices[usuario_accion.id] = 0.0
+    latest_prices = get_latest_prices(user)
+    first_prices = get_first_prices(user)
 
     return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view=view, latest_prices=latest_prices, first_prices=first_prices)
 
@@ -195,7 +210,10 @@ def delete_user_stock(usuario_accion_id):
         db.session.delete(usuario_accion)
         db.session.commit()
         user = Usuario.query.filter_by(id=user_id).first()
-        return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view='edit')
+
+        first_prices = get_first_prices(user)
+
+        return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view='edit', first_prices=first_prices)
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': "Couldn't delete from db"}), 500
@@ -223,7 +241,6 @@ def edit_user_stock():
     usuario_accion_id = data['usuario_accion_id']
     fecha_hora = data.get('fecha_hora')
     cantidad = data['cantidad']
-    precio_compra = data['precio_compra']
 
     usuario_accion = UsuarioAccion.query.filter_by(id=usuario_accion_id).first()
     if not usuario_accion:
@@ -231,12 +248,14 @@ def edit_user_stock():
 
     usuario_accion.fecha_hora = fecha_hora
     usuario_accion.cantidad = cantidad
-    usuario_accion.precio_compra = precio_compra
 
     try:
         db.session.commit()
         user = Usuario.query.filter_by(id=user_id).first()
-        return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view='edit')
+
+        first_prices = get_first_prices(user)
+
+        return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view='edit', first_prices=first_prices)
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': "Couldn't persist db"}), 500

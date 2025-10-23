@@ -139,7 +139,7 @@
                     class="cursor-pointer"
                     data-anim-name="stock-form-title"
                     id="stock-form-title"
-                    >Añadir acción</label
+                    >Añadir futuro</label
                   >
                 </div>
               </button>
@@ -177,7 +177,7 @@
               class="text-xl leading-none sm:text-2xl"
               style="view-transition-name: stock-form-title"
             >
-              Añadir acción
+              Añadir futuro
             </h1>
           </div>
           <div
@@ -193,7 +193,7 @@
             >
               <p class="mb-4 flex flex-col">
                 <label class="mb-1 text-slate-500" for="stock"
-                  >Nombre de la acción</label
+                  >Nombre del futuro</label
                 >
                 <select
                   class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
@@ -237,21 +237,6 @@
                   document.getElementById("date").value = formattedDate;
                 </script>
               </p>
-              <p class="mb-4 flex flex-col">
-                <label class="mb-1 text-slate-500" for="price"
-                  >Precio de compra</label
-                >
-                <input
-                  class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
-                  type="number"
-                  id="price"
-                  min="0.01"
-                  step="0.01"
-                  value="0.01"
-                  name="precio_compra"
-                  required
-                />
-              </p>
               <button
                 class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
                 type="submit"
@@ -288,7 +273,7 @@
                 <path d="M6 6l12 12" />
               </svg>
             </button>
-            <h1 class="text-xl leading-none sm:text-2xl">Editar acción</h1>
+            <h1 class="text-xl leading-none sm:text-2xl">Editar futuro</h1>
           </div>
           <div
             class="px-4 pb-4 lg:px-6 lg:pb-6"
@@ -308,7 +293,7 @@
                 id="edit-user-stock-id"
               />
               <div class="mb-4 flex flex-col">
-                <p class="mb-1 text-slate-500">Nombre de la acción</p>
+                <p class="mb-1 text-slate-500">Nombre del futuro</p>
                 <div
                   class="flex items-start rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
                   id="edit-stock"
@@ -347,21 +332,6 @@
                   id="edit-date"
                   name="fecha_hora"
                   value=""
-                  required
-                />
-              </p>
-              <p class="mb-4 flex flex-col">
-                <label class="mb-1 text-slate-500" for="edit-price"
-                  >Precio de compra</label
-                >
-                <input
-                  class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
-                  type="number"
-                  id="edit-price"
-                  min="0.01"
-                  step="0.01"
-                  value="0.01"
-                  name="precio_compra"
                   required
                 />
               </p>
@@ -442,7 +412,6 @@
         const editUserStockId = document.getElementById("edit-user-stock-id");
         const editAmount = document.getElementById("edit-amount");
         const editDate = document.getElementById("edit-date");
-        const editPrice = document.getElementById("edit-price");
 
         editUserStockId.value = id;
         editSymbol.style.viewTransitionName = `edit-stock-form-symbol-${id}`;
@@ -452,7 +421,6 @@
         editSymbol.textContent = symbol;
         editAmount.value = amount;
         editDate.value = date;
-        editPrice.value = price;
 
         await openPopup("edit");
       };
