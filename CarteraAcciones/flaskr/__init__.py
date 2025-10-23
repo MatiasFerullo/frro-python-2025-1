@@ -41,11 +41,13 @@ def create_app(test_config=None):
     from flaskr.routes.auth import auth_bp
     from flaskr.routes.index import index_bp
     from flaskr.routes.acciones import futuros_bp
+    from flaskr.routes.alertas import alertas_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(index_bp)
     app.register_blueprint(futuros_bp)
-    
+    app.register_blueprint(alertas_bp)
+
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
