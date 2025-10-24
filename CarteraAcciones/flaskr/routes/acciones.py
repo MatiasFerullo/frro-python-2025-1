@@ -5,6 +5,7 @@ from flask import Blueprint, jsonify
 from flaskr.models import Accion, Precio_accion
 from datetime import datetime
 from flaskr import db
+from flaskr.services.htmx_service import htmx_redirect
 from flaskr.services.pyrofex_service import get_active_futures 
 
 
@@ -207,6 +208,8 @@ def delete_user_stock(usuario_accion_id):
         return jsonify({'error': 'Registro no encontrado'}), 404
 
     try:
+        for alerta_rendimiento in usuario_accion.alertas_rendimiento:
+            db.session.delete(alerta_rendimiento.alerta)
         db.session.delete(usuario_accion)
         db.session.commit()
         user = Usuario.query.filter_by(id=user_id).first()
@@ -215,6 +218,7 @@ def delete_user_stock(usuario_accion_id):
 
         return render_template('htmx/stock-list.html', usuario_acciones=user.usuario_acciones, view='edit', first_prices=first_prices)
     except Exception as e:
+        print(str(e))
         db.session.rollback()
         return jsonify({'error': "Couldn't delete from db"}), 500
 
@@ -327,3 +331,14 @@ def portfolio_composition_chart_data():
         "values": values
     }
     return jsonify(data)
+
+@futuros_bp.route('/get-available-user-stocks', methods=['GET'])
+def get_available_user_stocks():
+    if 'user_id' not in session:
+        return htmx_redirect(url_for('index.index'))
+
+    user_id = session['user_id']
+    from flaskr.models import Usuario
+    user = Usuario.query.filter_by(id=user_id).first()
+
+    return render_template("htmx/available-user-stocks.html", user_stocks=user.usuario_acciones)

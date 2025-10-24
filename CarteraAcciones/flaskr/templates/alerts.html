@@ -294,14 +294,14 @@
               >
                 <p class="mb-4 flex flex-col">
                   <label class="mb-1 text-slate-500" for="element"
-                    >Futuro del portfolio</label
+                    >Futuro</label
                   >
                   <select
                     class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
                     id="element"
                     name="element_id"
                     required
-                    hx-get=""
+                    hx-get="/get-available-stocks"
                     hx-trigger="load"
                     hx-swap="innerHTML"
                     hx-target="this"
@@ -367,6 +367,12 @@
                     required
                   >
                     <option value="portfolio">Portafolio completo</option>
+                    <div
+                      hx-target="this"
+                      hx-trigger="load"
+                      hx-swap="outerHTML"
+                      hx-get="/get-available-user-stocks"
+                    ></div>
                   </select>
                 </p>
                 <p class="mb-4 flex flex-col">
@@ -603,6 +609,14 @@
         await transition.finished;
         selectedFormOpt.style.viewTransitionName = "";
       };
+    </script>
+    <script>
+      if (!window.errorListenerRegistered) {
+        document.body.addEventListener("showError", function (evt) {
+          alert(evt.detail.value);
+        });
+        window.errorListenerRegistered = true;
+      }
     </script>
   </body>
 </html>

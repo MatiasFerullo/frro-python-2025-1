@@ -3,21 +3,48 @@
         <div>
             <div
                 class="flex w-full p-1"
-                data-anim-name="edit-stock-form-bar-{{ 1 }}"
+                data-anim-name="edit-alert-form-bar-{{ alerta.id }}"
             >
                 <div class="flex w-full flex-row justify-between">
                 <div class="flex w-full flex-col items-start">
-                    <h3
-                    class="font-semibold"
-                    data-anim-name="edit-stock-form-symbol-{{ 1 }}"
-                    >
-                    Precio Mínimo
-                    </h3>
-                    <div
-                    class="flex flex-row items-center gap-1 text-gray-400"
-                    >
-                    <p>AL30/OCT25 - $1.000,00</p>
-                    </div>
+                    {% if alerta.alertas_precio %}
+                        <h3
+                            class="font-semibold"
+                            data-anim-name="edit-alert-form-symbol-{{ alerta.id }}"
+                        >
+                            Precio {{ "Mínimo" if alerta.alertas_precio[0].tipo == "min" else "Máximo" }}
+                        </h3>
+                        <div class="flex flex-row items-center gap-1 text-gray-400">
+                            <p>{{alerta.alertas_precio[0].accion.simbolo}} - ${{alerta.alertas_precio[0].precio | format_price}}</p>
+                        </div>
+                    {% elif alerta.alertas_portafolio %}
+                        <h3
+                            class="font-semibold"
+                            data-anim-name="edit-alert-form-symbol-{{ alerta.id }}"
+                        >
+                            Cambio Súbito
+                        </h3>
+                        <div class="flex flex-row items-center gap-1 text-gray-400">
+                            <p>Portafolio - {{alerta.alertas_portafolio[0].variacion}}</p>
+                        </div>
+                    {% elif alerta.alertas_rendimiento %}
+                        <h3
+                            class="font-semibold"
+                            data-anim-name="edit-alert-form-symbol-{{ alerta.id }}"
+                        >
+                            {{"Ganancia" if alerta.alertas_rendimiento[0].disparador == "gain" else "Pérdida"}}
+                        </h3>
+                        <div class="flex flex-row items-center gap-1 text-gray-400">
+                            {% if alerta.alertas_rendimiento[0].is_portafolio %}
+                                <p>Portafolio</p>
+                            {% else %}
+                                <p>{{alerta.alertas_rendimiento[0].usuario_accion.accion.simbolo}}</p>
+                                <p class="text-xs">({{alerta.alertas_rendimiento[0].usuario_accion.fecha_hora.strftime('%d/%m/%Y')}})</p>
+                            {% endif %}
+                            <p>-</p>
+                            <p>{{alerta.alertas_rendimiento[0].porcentaje}}%</p>
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="flex flex-row items-center gap-2">
                     <button
@@ -42,7 +69,7 @@
                     </svg></button
                     ><button
                     class="flex cursor-pointer rounded-sm bg-[#eb3837] p-1 text-white transition active:scale-90"
-                    hx-delete=""
+                    hx-delete="/delete-alert/{{ alerta.id }}"
                     hx-target="#alert-list"
                     hx-swap="innerHTML"
                     >
@@ -70,7 +97,7 @@
                 </div>
                 </div>
             </div>
-            <div data-anim-name="edit-stock-form-content-{{ 1 }}"></div>
+            <div data-anim-name="edit-alert-form-content-{{ alerta.id }}"></div>
         </div>
     {% endfor %}
 {% else %}

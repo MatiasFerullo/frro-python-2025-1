@@ -11,7 +11,8 @@ class Usuario(db.Model):
     email = db.Column(db.String(64), unique=True, index=True)
     password = db.Column(db.String(128))
 
-    usuario_acciones = db.relationship("UsuarioAccion", back_populates="user", lazy='select')
+    usuario_acciones = db.relationship("UsuarioAccion", back_populates="user", lazy='select', cascade="all, delete-orphan")
+    alertas = db.relationship("Alerta", back_populates="user", lazy='select', cascade="all, delete-orphan")
     def __repr__(self):
         return f"User('{self.email}')"
 
@@ -50,6 +51,43 @@ class UsuarioAccion(db.Model):
 
     user = db.relationship("Usuario", back_populates="usuario_acciones")
     accion = db.relationship("Accion", back_populates="usuario_acciones")
+    alertas_rendimiento = db.relationship("AlertaRendimiento", back_populates="usuario_accion", lazy='select', cascade="all, delete-orphan")
 
-    
+class Alerta(db.Model):
+    __tablename__ = "alerta"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("usuario.id"))
 
+    user = db.relationship("Usuario", back_populates="alertas")
+    alertas_precio = db.relationship("AlertaPrecio", back_populates="alerta", lazy='select', cascade="all, delete-orphan")
+    alertas_portafolio = db.relationship("AlertaPortafolio", back_populates="alerta", lazy='select', cascade="all, delete-orphan")
+    alertas_rendimiento = db.relationship("AlertaRendimiento", back_populates="alerta", lazy='select', cascade="all, delete-orphan")
+
+class AlertaPrecio(db.Model):
+    __tablename__ = "alerta_precio"
+    alerta_id = db.Column(db.Integer, db.ForeignKey("alerta.id"), primary_key=True)
+    accion_id = db.Column(db.Integer, db.ForeignKey("accion.id"), primary_key=True)
+    tipo = db.Column(db.String(10), primary_key=True)
+    precio = db.Column(db.Float, nullable=False)
+
+    alerta = db.relationship("Alerta", back_populates="alertas_precio")
+    accion = db.relationship("Accion")
+
+class AlertaPortafolio(db.Model):
+    __tablename__ = "alerta_portafolio"
+    alerta_id = db.Column(db.Integer, db.ForeignKey("alerta.id"), primary_key=True)
+    variacion = db.Column(db.Float, nullable=False)
+
+    alerta = db.relationship("Alerta", back_populates="alertas_portafolio")
+
+class AlertaRendimiento(db.Model):
+    __tablename__ = "alerta_rendimiento"
+    alerta_id = db.Column(db.Integer, db.ForeignKey("alerta.id"), primary_key=True)
+    # Aplica lógica de negocio para que el usuario no cree mas de una alerta por acción del portafolio
+    usuario_accion_id = db.Column(db.Integer, db.ForeignKey("usuario_accion.id"))
+    is_portafolio = db.Column(db.Boolean, nullable=False)
+    porcentaje = db.Column(db.Integer, nullable=False)
+    disparador = db.Column(db.String(10), nullable=False)
+
+    alerta = db.relationship("Alerta", back_populates="alertas_rendimiento")
+    usuario_accion = db.relationship("UsuarioAccion", back_populates="alertas_rendimiento")
