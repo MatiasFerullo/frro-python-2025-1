@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Cartera de Acciones</title>
+    <title>Cartera de Futuros</title>
     <link
       rel="icon"
       type="image/png"
@@ -38,18 +38,39 @@
       media="screen"
       href="{{ url_for('static', filename='css/output.css') }}"
     />
+    <script type="module">
+      import { DotLottie } from "{{ url_for('static', filename='js/lottie.js') }}";
+      const iconAnim = new DotLottie({
+        autoplay: true,
+        canvas: document.getElementById("icon"),
+        src: "{{ url_for('static', filename='icon.json') }}",
+      });
+      const homeBtn = document.getElementById("homeBtn");
+      homeBtn.addEventListener("mouseenter", () => iconAnim.play());
+      homeBtn.addEventListener("touchstart", () => iconAnim.play());
+    </script>
   </head>
   <body class="overflow-x-hidden bg-[#fbfbfb] select-none">
     <div class="flex justify-center border-b-1 border-slate-200 bg-white">
       <div
-        class="flex w-full max-w-4xl flex-row items-center justify-between p-4"
+        class="flex w-full max-w-4xl flex-row items-center justify-between p-2"
       >
         <div>
           <a
+            id="homeBtn"
             href="/"
-            class="flex cursor-pointer rounded-sm p-1 font-semibold transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
-            >Cartera de Acciones</a
+            class="flex cursor-pointer rounded-sm font-semibold transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
           >
+            <div class="flex flex-row items-center gap-2">
+              <canvas
+                id="icon"
+                width="40"
+                height="40"
+                class="h-10 w-10"
+              ></canvas>
+              <p class="mr-1 hidden sm:block">Cartera de Futuros</p>
+            </div>
+          </a>
         </div>
         <div class="flex flex-row gap-2">
           <a
