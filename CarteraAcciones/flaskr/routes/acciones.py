@@ -1,4 +1,5 @@
 ## ACA VAN LAS TODAS LAS RUTAS RELACIONADAS CON LAS ACCIONES
+from collections import defaultdict
 from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
 from datetime import datetime
 from flask import Blueprint, jsonify
@@ -189,7 +190,7 @@ def add_stock_to_portfolio():
 @futuros_bp.route('/get-user-stocks', methods=['GET'])
 def get_user_stocks():
     if 'user_id' not in session:
-        return redirect(url_for('index.index'))
+        return htmx_redirect(url_for('index.index'))
     
     user_id = session['user_id']
     from flaskr.models import Usuario, Precio_accion
@@ -206,7 +207,7 @@ def get_user_stocks():
 @futuros_bp.route('/delete-user-stock/<int:usuario_accion_id>', methods=['DELETE'])
 def delete_user_stock(usuario_accion_id):
     if 'user_id' not in session:
-        return redirect(url_for('index.index'))
+        return htmx_redirect(url_for('index.index'))
     
     user_id = session['user_id']
     from flaskr.models import UsuarioAccion, Usuario, db
@@ -243,7 +244,7 @@ def get_available_stocks():
 @futuros_bp.route('/edit-portfolio-stock', methods=['PATCH'])
 def edit_user_stock():
     if 'user_id' not in session:
-        return redirect(url_for('index.index'))
+        return htmx_redirect(url_for('index.index'))
     
     user_id = session['user_id']
 
@@ -289,7 +290,7 @@ def edit_user_stock():
 @futuros_bp.route('/get-portfolio-summary', methods=['GET'])
 def get_portfolio_summary():
     if 'user_id' not in session:
-        return redirect(url_for('index.index'))
+        return htmx_redirect(url_for('index.index'))
     
     user_id = session['user_id']
     from flaskr.models import Usuario, Precio_accion
@@ -324,10 +325,33 @@ def portfolio_chart_data():
     # Labels tiene los valores del eje x
     # Values tiene los valores del eje y correspondientes a cáda valor del eje x
     # Por esta razón ambas listas deben tener la misma cantidad de elementos
+    if 'user_id' not in session:
+        return redirect(url_for('index.index'))
+    user_id = session['user_id']
+
+    from flaskr.models import Usuario, Precio_accion
+
+    user = Usuario.query.filter_by(id=user_id).first()
+    usuario_acciones = user.usuario_acciones
+    sum_ = defaultdict(float)
+    for usuario_accion in usuario_acciones:
+        precios = Precio_accion.query.filter_by(accion_id=usuario_accion.accion_id).order_by(func.date(Precio_accion.fecha_hora).desc())
+        for precio in precios:
+            if precio.fecha_hora.date() >= usuario_accion.fecha:
+                fecha = precio.fecha_hora.date()
+                sum_[fecha] += (precio.precio * usuario_accion.cantidad)
+
+    fechas_ordenadas = sorted(sum_.keys())
+
     data = {
-        "labels": ["10/8", "11/8", "12/8", "13/8", "14/8", "15/8", "16/8", "17/8", "18/8", "19/8", "20/8"],
-        "values": [120, 118, 121, 123, 125, 127, 130, 128, 132, 135, 100]
+        "labels": [fecha.strftime("%-d/%-m") for fecha in fechas_ordenadas],
+        "values": [sum_[fecha] for fecha in fechas_ordenadas]
     }
+
+    if len(data["labels"]) == 1:
+        data["labels"].append(data["labels"][0])
+        data["values"].append(data["values"][0])
+    print(data)
     return jsonify(data)
 
 @futuros_bp.route('/portfolio-composition-chart-data', methods=['GET'])
