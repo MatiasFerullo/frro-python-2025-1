@@ -155,11 +155,11 @@ def add_stock_to_portfolio():
     cantidad = data['cantidad']
 
     if (UsuarioAccion.query.filter_by(accion_id=int(accion_id), user_id=int(user_id), fecha=fecha).first()):
-        return htmx_show_error_trigger("Ya tienes esa acción en esa fecha, puedes editarla desde el portafolio")
+        return htmx_show_error_trigger("Ya posee este futuro en la fecha seleccionada. Puede editarlo desde el portafolio.")
 
     first_ever_price = Precio_accion.query.filter_by(accion_id=int(accion_id)).order_by(func.date(Precio_accion.fecha_hora).asc()).first()
     if (first_ever_price.fecha_hora.date() > date.fromisoformat(fecha)):
-        return htmx_show_error_trigger(f"No hay registros de precios anteriores a {first_ever_price.fecha_hora.date().strftime('%d/%m/%Y')} para esa acción")
+        return htmx_show_error_trigger(f"No existen registros de precios anteriores al {first_ever_price.fecha_hora.date().strftime('%d/%m/%Y')} para este futuro.")
 
     accion = Accion.query.filter_by(id=accion_id).first()
     if not accion:
@@ -266,11 +266,11 @@ def edit_user_stock():
     ).first()
 
     if conflict:
-        return htmx_show_error_trigger("Ya tienes una acción del mismo tipo en esa fecha, puedes eliminar esta y editar la otra desde el portafolio")
+        return htmx_show_error_trigger("Ya posee un futuro del mismo tipo en la fecha seleccionada.")
 
     first_ever_price = Precio_accion.query.filter_by(accion_id=int(usuario_accion.accion_id)).order_by(func.date(Precio_accion.fecha_hora).asc()).first()
     if (first_ever_price.fecha_hora.date() > date.fromisoformat(fecha)):
-        return htmx_show_error_trigger(f"No hay registros de precios anteriores a {first_ever_price.fecha_hora.date().strftime('%d/%m/%Y')} para esa acción")
+        return htmx_show_error_trigger(f"No existen registros de precios anteriores al {first_ever_price.fecha_hora.date().strftime('%d/%m/%Y')} para este futuro.")
 
     usuario_accion.fecha = fecha
     usuario_accion.cantidad = cantidad
