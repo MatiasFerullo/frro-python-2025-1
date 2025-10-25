@@ -50,7 +50,9 @@
       homeBtn.addEventListener("touchstart", () => iconAnim.play());
     </script>
   </head>
-  <body class="overflow-x-hidden bg-[#fbfbfb] select-none">
+  <body
+    class="flex min-h-screen flex-col overflow-x-hidden bg-[#fbfbfb] select-none"
+  >
     <div class="flex justify-center border-b-1 border-slate-200 bg-white">
       <div
         class="flex w-full max-w-4xl flex-row items-center justify-between p-2"
@@ -82,12 +84,118 @@
         </div>
       </div>
     </div>
-    <div class="flex min-h-screen w-full flex-col items-center">
-      <div
-        class="flex w-full flex-1 items-center border-slate-200 bg-white lg:max-w-4xl lg:border-x-1"
-      >
-        <div class="flex w-full justify-center p-4">
-          <p>Bienvenido!</p>
+    <div class="flex flex-1 items-center justify-center bg-white">
+      <div class="w-full max-w-4xl px-6 py-8">
+        <div class="space-y-6 text-center">
+          <div class="space-y-3">
+            <h1
+              class="text-4xl font-bold text-slate-800 sm:text-5xl md:text-6xl"
+            >
+              Visualizá tu cartera<br />de futuros
+            </h1>
+            <p class="mx-auto max-w-2xl text-lg text-slate-600 sm:text-xl">
+              Seguimiento diario, análisis de rendimiento y gestión de alertas
+            </p>
+          </div>
+
+          <div
+            class="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row"
+          >
+            <a
+              href="/auth/register"
+              class="w-full rounded-lg bg-slate-600 px-8 py-3 font-semibold text-white transition active:scale-90 sm:w-auto"
+            >
+              Comenzar ahora
+            </a>
+            <a
+              href="/auth/login"
+              class="w-full rounded-lg px-8 py-3 font-semibold transition hover:bg-gray-200 active:scale-90 active:bg-gray-200 sm:w-auto"
+            >
+              Iniciar sesión
+            </a>
+          </div>
+
+          <div
+            class="mx-auto grid max-w-3xl grid-cols-1 gap-6 sm:grid-cols-3 sm:pt-8"
+          >
+            <div class="p-5">
+              <div
+                class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-slate-600"
+              >
+                <svg
+                  class="h-6 w-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  ></path>
+                </svg>
+              </div>
+              <h3 class="mb-1 font-semibold text-slate-800">Seguimiento</h3>
+              <p class="text-sm text-slate-600">
+                Monitoreá todas tus posiciones con datos actualizados a la fecha
+              </p>
+            </div>
+
+            <div class="p-5">
+              <div
+                class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-slate-600"
+              >
+                <svg
+                  class="h-6 w-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                  ></path>
+                </svg>
+              </div>
+              <h3 class="mb-1 font-semibold text-slate-800">Análisis</h3>
+              <p class="text-sm text-slate-600">
+                Evaluá tu performance con una interfaz simple e intuitiva
+              </p>
+            </div>
+
+            <div class="p-5">
+              <div
+                class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-slate-600"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="h-6 w-6 text-white"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path
+                    d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"
+                  />
+                  <path d="M9 17v1a3 3 0 0 0 6 0v-1" />
+                </svg>
+              </div>
+              <h3 class="mb-1 font-semibold text-slate-800">Alertas</h3>
+              <p class="text-sm text-slate-600">
+                Recibí notificaciones sobre cambios importantes en tus
+                inversiones
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
