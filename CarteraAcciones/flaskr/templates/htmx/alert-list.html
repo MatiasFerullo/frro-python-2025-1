@@ -10,7 +10,6 @@
                     {% if alerta.alertas_precio %}
                         <h3
                             class="font-semibold"
-                            data-anim-name="edit-alert-form-symbol-{{ alerta.id }}"
                         >
                             Precio {{ "Mínimo" if alerta.alertas_precio[0].tipo == "min" else "Máximo" }}
                         </h3>
@@ -20,17 +19,15 @@
                     {% elif alerta.alertas_portafolio %}
                         <h3
                             class="font-semibold"
-                            data-anim-name="edit-alert-form-symbol-{{ alerta.id }}"
                         >
                             Cambio Súbito
                         </h3>
                         <div class="flex flex-row items-center gap-1 text-gray-400">
-                            <p>Portafolio - {{alerta.alertas_portafolio[0].variacion}}</p>
+                            <p>Portafolio - {{alerta.alertas_portafolio[0].variacion | format_price}}</p>
                         </div>
                     {% elif alerta.alertas_rendimiento %}
                         <h3
                             class="font-semibold"
-                            data-anim-name="edit-alert-form-symbol-{{ alerta.id }}"
                         >
                             {{"Ganancia" if alerta.alertas_rendimiento[0].disparador == "gain" else "Pérdida"}}
                         </h3>
@@ -49,6 +46,26 @@
                 <div class="flex flex-row items-center gap-2">
                     <button
                     class="flex cursor-pointer rounded-sm bg-slate-600 p-1 text-white transition active:scale-90"
+                    {% if alerta.alertas_precio %}
+                        onclick="openEditPopup('1', {
+                            alerta_id: '{{alerta.alertas_precio[0].alerta_id}}',
+                            elemento: '{{alerta.alertas_precio[0].accion.nombre}}',
+                            tipo: '{{alerta.alertas_precio[0].tipo}}',
+                            precio: '{{alerta.alertas_precio[0].precio}}'
+                        })"
+                    {% elif alerta.alertas_rendimiento %}
+                        onclick="openEditPopup('2', {
+                            alerta_id: '{{alerta.alertas_rendimiento[0].alerta_id}}',
+                            elemento: '{% if alerta.alertas_rendimiento[0].is_portafolio %}Portafolio{% else %}{{alerta.alertas_rendimiento[0].usuario_accion.accion.nombre}} ({{alerta.alertas_rendimiento[0].usuario_accion.fecha_hora.strftime('%d/%m/%Y')}}){% endif %}',
+                            disparador: '{{alerta.alertas_rendimiento[0].disparador}}',
+                            porcentaje: '{{alerta.alertas_rendimiento[0].porcentaje}}'
+                        })"
+                    {% elif alerta.alertas_portafolio %}
+                        onclick="openEditPopup('3', {
+                            alerta_id: '{{alerta.alertas_portafolio[0].alerta_id}}',
+                            variacion: '{{alerta.alertas_portafolio[0].variacion}}'
+                        })"
+                    {% endif %}
                     >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"

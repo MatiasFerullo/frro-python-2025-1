@@ -484,20 +484,189 @@
             id="edit-alert-form-content"
             style="view-transition-name: edit-alert-form-content"
           >
-            <form
-              class="px-[2px]"
-              hx-patch=""
-              hx-swap="innerHTML"
-              hx-target="#alert-list"
-              onsubmit="history.back()"
-            >
-              <button
-                class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
-                type="submit"
+            <div id="edit-alert-form-opt-1" hidden>
+              <p class="mt-2 mb-4 text-lg sm:text-xl">
+                Precio Mínimo/Máximo de un Futuro
+              </p>
+              <form
+                class="px-[2px]"
+                hx-patch=""
+                hx-swap="innerHTML"
+                hx-target="#alert-list"
+                onsubmit="history.back()"
               >
-                Guardar
-              </button>
-            </form>
+                <input
+                  type="hidden"
+                  name="usuario_accion_id"
+                  id="edit-alert-form-opt-1-id"
+                />
+                <div class="mb-4 flex flex-col">
+                  <p class="mb-1 text-slate-500">Futuro</p>
+                  <div
+                    class="flex items-start rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                  >
+                    <h3
+                      class="font-semibold text-slate-500"
+                      id="edit-alert-form-opt-1-element"
+                    >
+                      BLANK
+                    </h3>
+                  </div>
+                </div>
+                <p class="mb-4 flex flex-col">
+                  <label
+                    class="mb-1 text-slate-500"
+                    for="edit-alert-form-opt-1-type"
+                    >Disparador</label
+                  >
+                  <select
+                    class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                    id="edit-alert-form-opt-1-type"
+                    name="type"
+                    required
+                  >
+                    <option value="min">Mínimo</option>
+                    <option value="max">Máximo</option>
+                  </select>
+                </p>
+                <p class="mb-4 flex flex-col">
+                  <label
+                    class="mb-1 text-slate-500"
+                    for="edit-alert-form-opt-1-price"
+                    >Valor (ARS)</label
+                  >
+                  <input
+                    class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                    type="number"
+                    id="edit-alert-form-opt-1-price"
+                    min="0.01"
+                    step="0.01"
+                    value="0.01"
+                    name="price"
+                    required
+                  />
+                </p>
+                <button
+                  class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
+                  type="submit"
+                >
+                  Guardar
+                </button>
+              </form>
+            </div>
+            <div id="edit-alert-form-opt-2" hidden>
+              <p class="mt-2 mb-4 text-lg sm:text-xl">
+                Pérdida o Ganancia Mayor a un Porcentaje
+              </p>
+              <form
+                class="px-[2px]"
+                hx-patch=""
+                hx-swap="innerHTML"
+                hx-target="#alert-list"
+                onsubmit="history.back()"
+              >
+                <input
+                  type="hidden"
+                  name="usuario_accion_id"
+                  id="edit-alert-form-opt-2-id"
+                />
+                <div class="mb-4 flex flex-col">
+                  <p class="mb-1 text-slate-500">Elemento</p>
+                  <div
+                    class="flex items-start rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                  >
+                    <h3
+                      class="font-semibold text-slate-500"
+                      id="edit-alert-form-opt-2-element"
+                    >
+                      BLANK
+                    </h3>
+                  </div>
+                </div>
+                <p class="mb-4 flex flex-col">
+                  <label
+                    class="mb-1 text-slate-500"
+                    for="edit-alert-form-opt-2-trigger"
+                    >Disparador</label
+                  >
+                  <select
+                    class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                    id="edit-alert-form-opt-2-trigger"
+                    name="trigger"
+                    required
+                  >
+                    <option value="loss">Pérdida</option>
+                    <option value="gain">Ganancia</option>
+                  </select>
+                </p>
+                <p class="mb-4 flex flex-col">
+                  <label
+                    class="mb-1 text-slate-500"
+                    for="edit-alert-form-opt-2-percentage"
+                    >Porcentaje</label
+                  >
+                  <input
+                    class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                    type="number"
+                    id="edit-alert-form-opt-2-percentage"
+                    min="1"
+                    max="100"
+                    step="1"
+                    name="percentage"
+                    value="1"
+                    required
+                  />
+                </p>
+                <button
+                  class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
+                  type="submit"
+                >
+                  Guardar
+                </button>
+              </form>
+            </div>
+            <div id="edit-alert-form-opt-3" hidden>
+              <p class="mt-2 mb-4 text-lg sm:text-xl">
+                Cambios Súbitos en el Valor del Portafolio
+              </p>
+              <form
+                class="px-[2px]"
+                hx-patch=""
+                hx-swap="innerHTML"
+                hx-target="#alert-list"
+                onsubmit="history.back()"
+              >
+                <input
+                  type="hidden"
+                  name="usuario_accion_id"
+                  id="edit-alert-form-opt-3-id"
+                />
+                <p class="mb-4 flex flex-col">
+                  <label
+                    class="mb-1 text-slate-500"
+                    for="edit-alert-form-opt-3-threshold"
+                    >Umbral de variación</label
+                  >
+                  <input
+                    class="rounded-sm px-3 py-2 outline-1 outline-slate-200 transition placeholder:text-slate-500 focus:outline-slate-300"
+                    type="number"
+                    id="edit-alert-form-opt-3-threshold"
+                    name="threshold"
+                    min="0.01"
+                    max="0.99"
+                    step="0.01"
+                    value="0.03"
+                    required
+                  />
+                </p>
+                <button
+                  class="mt-4 w-full cursor-pointer rounded-sm bg-slate-600 px-3 py-2 text-white transition active:scale-90"
+                  type="submit"
+                >
+                  Guardar
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -566,7 +735,59 @@
         await toggleViews(targetView);
       };
 
-      const openEditPopup = async (id, symbol, amount, date, price) => {
+      const openEditPopup = async (form_type, data) => {
+        edit_alert_form_1 = document.getElementById("edit-alert-form-opt-1");
+        edit_alert_form_2 = document.getElementById("edit-alert-form-opt-2");
+        edit_alert_form_3 = document.getElementById("edit-alert-form-opt-3");
+        edit_alert_form_1.hidden = true;
+        edit_alert_form_2.hidden = true;
+        edit_alert_form_3.hidden = true;
+
+        const editContent = document.getElementById("edit-alert-form-content");
+        const editBar = document.getElementById("edit-alert-form-bar");
+        editContent.style.viewTransitionName = `edit-alert-form-content-${data.alerta_id}`;
+        editBar.style.viewTransitionName = `edit-alert-form-bar-${data.alerta_id}`;
+        switch (form_type) {
+          case "1":
+            edit_alert_form_1.hidden = false;
+            // Form fields
+            alerta_id = document.getElementById("edit-alert-form-opt-1-id");
+            elemento = document.getElementById("edit-alert-form-opt-1-element");
+            tipo = document.getElementById("edit-alert-form-opt-1-type");
+            precio = document.getElementById("edit-alert-form-opt-1-price");
+
+            alerta_id.value = data.alerta_id;
+            elemento.textContent = data.elemento;
+            tipo.value = data.tipo;
+            precio.value = data.precio;
+            break;
+          case "2":
+            edit_alert_form_2.hidden = false;
+            // Form fields
+            alerta_id = document.getElementById("edit-alert-form-opt-2-id");
+            elemento = document.getElementById("edit-alert-form-opt-2-element");
+            disparador = document.getElementById(
+              "edit-alert-form-opt-2-trigger",
+            );
+            porcentaje = document.getElementById(
+              "edit-alert-form-opt-2-percentage",
+            );
+
+            alerta_id.value = data.alerta_id;
+            elemento.textContent = data.elemento;
+            disparador.value = data.disparador;
+            porcentaje.value = data.porcentaje;
+            break;
+          case "3":
+            edit_alert_form_3.hidden = false;
+            // Form fields
+            alerta_id = document.getElementById("edit-alert-form-opt-3-id");
+            umbral = document.getElementById("edit-alert-form-opt-3-threshold");
+
+            alerta_id.value = data.alerta_id;
+            umbral.value = data.variacion;
+            break;
+        }
         await openPopup("edit");
       };
 
