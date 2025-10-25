@@ -36,7 +36,7 @@
                                 <p>Portafolio</p>
                             {% else %}
                                 <p>{{alerta.alertas_rendimiento[0].usuario_accion.accion.simbolo}}</p>
-                                <p class="text-xs">({{alerta.alertas_rendimiento[0].usuario_accion.fecha_hora.strftime('%d/%m/%Y')}})</p>
+                                <p class="text-xs">({{alerta.alertas_rendimiento[0].usuario_accion.fecha.strftime('%d/%m/%Y')}})</p>
                             {% endif %}
                             <p>-</p>
                             <p>{{alerta.alertas_rendimiento[0].porcentaje}}%</p>
@@ -56,7 +56,7 @@
                     {% elif alerta.alertas_rendimiento %}
                         onclick="openEditPopup('2', {
                             alerta_id: '{{alerta.alertas_rendimiento[0].alerta_id}}',
-                            elemento: '{% if alerta.alertas_rendimiento[0].is_portafolio %}Portafolio{% else %}{{alerta.alertas_rendimiento[0].usuario_accion.accion.nombre}} ({{alerta.alertas_rendimiento[0].usuario_accion.fecha_hora.strftime('%d/%m/%Y')}}){% endif %}',
+                            elemento: '{% if alerta.alertas_rendimiento[0].is_portafolio %}Portafolio{% else %}{{alerta.alertas_rendimiento[0].usuario_accion.accion.nombre}} ({{alerta.alertas_rendimiento[0].usuario_accion.fecha.strftime('%d/%m/%Y')}}){% endif %}',
                             disparador: '{{alerta.alertas_rendimiento[0].disparador}}',
                             porcentaje: '{{alerta.alertas_rendimiento[0].porcentaje}}'
                         })"

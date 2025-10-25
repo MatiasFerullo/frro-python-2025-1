@@ -45,7 +45,7 @@ class UsuarioAccion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("usuario.id"))
     accion_id = db.Column(db.Integer, db.ForeignKey("accion.id"))
-    fecha_hora = db.Column(db.DateTime)
+    fecha = db.Column(db.Date)
     cantidad = db.Column(db.Float, nullable=False)
     precio_compra = db.Column(db.Float, nullable=False)
 

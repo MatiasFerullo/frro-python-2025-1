@@ -1,3 +1,3 @@
 {% for user_stock in user_stocks %}
-    <option value="{{ user_stock.id }}">{{ user_stock.accion.simbolo }} ({{user_stock.fecha_hora.strftime('%d/%m/%Y')}})</option>
+    <option value="{{ user_stock.id }}">{{ user_stock.accion.simbolo }} ({{user_stock.fecha.strftime('%d/%m/%Y')}})</option>
 {% endfor %}

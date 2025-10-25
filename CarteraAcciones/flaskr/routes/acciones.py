@@ -117,7 +117,7 @@ def get_first_prices(user):
 
         first_price_record = Precio_accion.query.filter(
             Precio_accion.accion_id == usuario_accion.accion_id,
-            Precio_accion.fecha_hora <= usuario_accion.fecha_hora
+            Precio_accion.fecha_hora <= usuario_accion.fecha
         ).order_by(Precio_accion.fecha_hora.desc()).first()
 
         if first_price_record:
@@ -149,7 +149,7 @@ def add_stock_to_portfolio():
     from flaskr.models import Accion, Usuario, UsuarioAccion, db
 
     data = request.form
-    fecha_hora = data.get('fecha_hora')
+    fecha = data.get('fecha')
     accion_id = data['accion_id']
     cantidad = data['cantidad']
 
@@ -161,7 +161,7 @@ def add_stock_to_portfolio():
     nueva_usuario_accion = UsuarioAccion(
         user_id=user_id,
         accion_id=accion_id,
-        fecha_hora=fecha_hora,
+        fecha=fecha,
         cantidad=cantidad,
         precio_compra=1
     )
@@ -243,14 +243,14 @@ def edit_user_stock():
 
     data = request.form
     usuario_accion_id = data['usuario_accion_id']
-    fecha_hora = data.get('fecha_hora')
+    fecha = data.get('fecha')
     cantidad = data['cantidad']
 
     usuario_accion = UsuarioAccion.query.filter_by(id=usuario_accion_id).first()
     if not usuario_accion:
         return jsonify({'error': 'Acción del usuario no encontrada'}), 404
 
-    usuario_accion.fecha_hora = fecha_hora
+    usuario_accion.fecha = fecha
     usuario_accion.cantidad = cantidad
 
     try:
@@ -283,7 +283,7 @@ def get_portfolio_summary():
             gain_sum += (usuario_accion.cantidad * latest_price)
         first_price_record = Precio_accion.query.filter(
             Precio_accion.accion_id == usuario_accion.accion_id,
-            Precio_accion.fecha_hora <= usuario_accion.fecha_hora
+            Precio_accion.fecha_hora <= usuario_accion.fecha
         ).order_by(Precio_accion.fecha_hora.desc()).first()
         if first_price_record:
             initial_investment += (usuario_accion.cantidad * first_price_record.precio)
