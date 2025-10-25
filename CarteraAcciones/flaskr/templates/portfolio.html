@@ -231,8 +231,10 @@
                 />
                 <script>
                   const now = new Date();
-                  const formattedDate = now.toISOString().slice(0, 16);
-                  document.getElementById("date").value = formattedDate;
+                  const formattedDate = now.toISOString().split("T")[0];
+                  const dateInput = document.getElementById("date");
+                  dateInput.value = formattedDate;
+                  dateInput.max = formattedDate;
                 </script>
               </p>
               <button
@@ -443,6 +445,14 @@
       editBackButton.addEventListener("click", async () => {
         history.back();
       });
+    </script>
+    <script>
+      if (!window.errorListenerRegistered) {
+        document.body.addEventListener("showError", function (evt) {
+          alert(evt.detail.value);
+        });
+        window.errorListenerRegistered = true;
+      }
     </script>
   </body>
 </html>

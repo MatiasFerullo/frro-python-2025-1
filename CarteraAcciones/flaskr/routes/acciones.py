@@ -2,12 +2,13 @@
 from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
 from datetime import datetime
 from flask import Blueprint, jsonify
+from sqlalchemy import func
 from flaskr.models import Accion, Precio_accion
 from datetime import datetime
 from flaskr import db
-from flaskr.services.htmx_service import htmx_redirect
+from flaskr.services.htmx_service import htmx_redirect, htmx_show_error_trigger
 from flaskr.services.pyrofex_service import get_active_futures 
-
+from datetime import date
 
 
 
@@ -117,7 +118,7 @@ def get_first_prices(user):
 
         first_price_record = Precio_accion.query.filter(
             Precio_accion.accion_id == usuario_accion.accion_id,
-            Precio_accion.fecha_hora <= usuario_accion.fecha
+            func.date(Precio_accion.fecha_hora) <= usuario_accion.fecha
         ).order_by(Precio_accion.fecha_hora.desc()).first()
 
         if first_price_record:
@@ -142,16 +143,23 @@ def get_latest_prices(user):
 @futuros_bp.route('/new-portfolio-stock', methods=['POST'])
 def add_stock_to_portfolio():
     if 'user_id' not in session:
-        return redirect(url_for('index.index'))
+        return htmx_redirect(url_for('index.index'))
     
     user_id = session['user_id']
 
-    from flaskr.models import Accion, Usuario, UsuarioAccion, db
+    from flaskr.models import Accion, Usuario, UsuarioAccion, Precio_accion, db
 
     data = request.form
     fecha = data.get('fecha')
     accion_id = data['accion_id']
     cantidad = data['cantidad']
+
+    if (UsuarioAccion.query.filter_by(accion_id=int(accion_id), user_id=int(user_id), fecha=fecha).first()):
+        return htmx_show_error_trigger("Ya tienes esa acción en esa fecha, puedes editarla desde el portafolio")
+
+    first_ever_price = Precio_accion.query.filter_by(accion_id=int(accion_id)).order_by(func.date(Precio_accion.fecha_hora).asc()).first()
+    if (first_ever_price.fecha_hora.date() > date.fromisoformat(fecha)):
+        return htmx_show_error_trigger(f"No hay registros de precios anteriores a {first_ever_price.fecha_hora.date().strftime('%d/%m/%Y')} para esa acción")
 
     accion = Accion.query.filter_by(id=accion_id).first()
     if not accion:
@@ -239,7 +247,7 @@ def edit_user_stock():
     
     user_id = session['user_id']
 
-    from flaskr.models import UsuarioAccion, Usuario, UsuarioAccion, db
+    from flaskr.models import UsuarioAccion, Usuario, UsuarioAccion, Precio_accion, db
 
     data = request.form
     usuario_accion_id = data['usuario_accion_id']
@@ -249,6 +257,20 @@ def edit_user_stock():
     usuario_accion = UsuarioAccion.query.filter_by(id=usuario_accion_id).first()
     if not usuario_accion:
         return jsonify({'error': 'Acción del usuario no encontrada'}), 404
+
+    conflict = UsuarioAccion.query.filter(
+        UsuarioAccion.id != usuario_accion.id,
+        UsuarioAccion.accion_id == usuario_accion.accion_id,
+        UsuarioAccion.user_id == user_id,
+        UsuarioAccion.fecha == fecha
+    ).first()
+
+    if conflict:
+        return htmx_show_error_trigger("Ya tienes una acción del mismo tipo en esa fecha, puedes eliminar esta y editar la otra desde el portafolio")
+
+    first_ever_price = Precio_accion.query.filter_by(accion_id=int(usuario_accion.accion_id)).order_by(func.date(Precio_accion.fecha_hora).asc()).first()
+    if (first_ever_price.fecha_hora.date() > date.fromisoformat(fecha)):
+        return htmx_show_error_trigger(f"No hay registros de precios anteriores a {first_ever_price.fecha_hora.date().strftime('%d/%m/%Y')} para esa acción")
 
     usuario_accion.fecha = fecha
     usuario_accion.cantidad = cantidad
@@ -283,7 +305,7 @@ def get_portfolio_summary():
             gain_sum += (usuario_accion.cantidad * latest_price)
         first_price_record = Precio_accion.query.filter(
             Precio_accion.accion_id == usuario_accion.accion_id,
-            Precio_accion.fecha_hora <= usuario_accion.fecha
+            func.date(Precio_accion.fecha_hora) <= usuario_accion.fecha
         ).order_by(Precio_accion.fecha_hora.desc()).first()
         if first_price_record:
             initial_investment += (usuario_accion.cantidad * first_price_record.precio)
