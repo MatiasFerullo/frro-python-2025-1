@@ -58,9 +58,25 @@
         const stockChart = document
           .getElementById("stockChart")
           .getContext("2d");
+        const stockChartContainer = document.getElementById(
+          "stockChartContainer",
+        );
+        const compositionChartContainer = document.getElementById(
+          "compositionChartContainer",
+        );
 
-        const chart1DataResponse = await fetch("/portfolio-chart-data");
+        const chart1DataResponse = await fetch("/portfolio-chart-data?d=7");
         const chart1Data = await chart1DataResponse.json();
+        stockChartContainer.classList.remove("animate-pulse", "bg-gray-200");
+
+        const chart2DataResponse = await fetch(
+          "/portfolio-composition-chart-data",
+        );
+        const chart2Data = await chart2DataResponse.json();
+        compositionChartContainer.classList.remove(
+          "animate-pulse",
+          "bg-gray-200",
+        );
 
         let chart1 = new Chart(stockChart, {
           type: "line",
@@ -93,6 +109,11 @@
               y: {
                 title: { display: false },
                 grid: { display: false },
+                ticks: {
+                  callback: function (value) {
+                    return formatPrice(value);
+                  },
+                },
               },
             },
           },
@@ -101,11 +122,6 @@
         const compositionChart = document
           .getElementById("compositionChart")
           .getContext("2d");
-
-        const chart2DataResponse = await fetch(
-          "/portfolio-composition-chart-data",
-        );
-        const chart2Data = await chart2DataResponse.json();
 
         let tooltipsEnabled = true;
 
@@ -253,7 +269,8 @@
           </div>
         </div>
         <a
-          class="flex h-40 w-full min-w-0 cursor-pointer rounded-sm bg-white transition hover:bg-gray-200 active:scale-90 active:bg-gray-200 sm:flex-1"
+          id="stockChartContainer"
+          class="flex h-40 w-full min-w-0 animate-pulse cursor-pointer rounded-sm bg-gray-200 transition hover:bg-gray-200 active:scale-90 active:bg-gray-200 sm:flex-1"
           style="view-transition-name: chart"
           href="/chart"
         >
@@ -370,7 +387,16 @@
         </div>
         <div class="px-4 lg:px-6">
           <div class="flex h-70 justify-center">
-            <canvas id="compositionChart"></canvas>
+            <div
+              id="compositionChartContainer"
+              class="h-max w-auto animate-pulse rounded-full bg-gray-200"
+            >
+              <canvas
+                id="compositionChart"
+                width="280px"
+                height="280px"
+              ></canvas>
+            </div>
           </div>
         </div>
       </div>

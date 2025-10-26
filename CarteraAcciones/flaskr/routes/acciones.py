@@ -1,11 +1,10 @@
 ## ACA VAN LAS TODAS LAS RUTAS RELACIONADAS CON LAS ACCIONES
 from collections import defaultdict
 from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Blueprint, jsonify
 from sqlalchemy import func
 from flaskr.models import Accion, Precio_accion
-from datetime import datetime
 from flaskr import db
 from flaskr.services.htmx_service import htmx_redirect, htmx_show_error_trigger
 from flaskr.services.pyrofex_service import get_active_futures 
@@ -320,14 +319,15 @@ def get_portfolio_summary():
 
 @futuros_bp.route('/portfolio-chart-data', methods=['GET'])
 def portfolio_chart_data():
-    # TODO: Agregar el histórico del portafolio del usuario
-    # Este endpoint controla la gráfica que aparece arriba de todo en la página principal
-    # Labels tiene los valores del eje x
-    # Values tiene los valores del eje y correspondientes a cáda valor del eje x
-    # Por esta razón ambas listas deben tener la misma cantidad de elementos
     if 'user_id' not in session:
         return redirect(url_for('index.index'))
     user_id = session['user_id']
+
+    days = request.args.get('d')
+    if not days or days not in ["7", "14", "21", "30", "60", "90", "180"]:
+        days = "7"
+
+    date_limit = date.today() - timedelta(days=int(days))
 
     from flaskr.models import Usuario, Precio_accion
 
@@ -337,9 +337,10 @@ def portfolio_chart_data():
     for usuario_accion in usuario_acciones:
         precios = Precio_accion.query.filter_by(accion_id=usuario_accion.accion_id).order_by(func.date(Precio_accion.fecha_hora).desc())
         for precio in precios:
-            if precio.fecha_hora.date() >= usuario_accion.fecha:
-                fecha = precio.fecha_hora.date()
-                sum_[fecha] += (precio.precio * usuario_accion.cantidad)
+            if precio.fecha_hora.date() >= date_limit:
+                if precio.fecha_hora.date() >= usuario_accion.fecha:
+                    fecha = precio.fecha_hora.date()
+                    sum_[fecha] += (precio.precio * usuario_accion.cantidad)
 
     fechas_ordenadas = sorted(sum_.keys())
 
@@ -385,6 +386,49 @@ def get_available_user_stocks():
 
     user_id = session['user_id']
     from flaskr.models import Usuario
+    user = Usuario.query.filte
     user = Usuario.query.filter_by(id=user_id).first()
 
     return render_template("htmx/available-user-stocks.html", user_stocks=user.usuario_acciones)
+
+@futuros_bp.route('/portfolio-gains-chart-data', methods=['GET'])
+def portfolio_gains_chart_data():
+    if 'user_id' not in session:
+        return redirect(url_for('index.index'))
+    user_id = session['user_id']
+
+    days = request.args.get('d')
+    if not days or days not in ["7", "14", "21", "30", "60", "90", "180"]:
+        days = "7"
+
+    date_limit = date.today() - timedelta(days=int(days))
+
+    from flaskr.models import Usuario, Precio_accion
+
+    user = Usuario.query.filter_by(id=user_id).first()
+    usuario_acciones = user.usuario_acciones
+    sum_ = defaultdict(float)
+    for usuario_accion in usuario_acciones:
+        precios = Precio_accion.query.filter_by(accion_id=usuario_accion.accion_id).order_by(func.date(Precio_accion.fecha_hora).desc())
+        for precio in precios:
+            if precio.fecha_hora.date() >= date_limit:
+                if precio.fecha_hora.date() >= usuario_accion.fecha:
+                    fecha = precio.fecha_hora.date()
+                    precio_compra = Precio_accion.query.filter(
+                        Precio_accion.accion_id == usuario_accion.accion_id,
+                        func.date(Precio_accion.fecha_hora) <= usuario_accion.fecha
+                    ).order_by(Precio_accion.fecha_hora.desc()).first().precio
+                    sum_[fecha] += ((precio.precio - precio_compra) * usuario_accion.cantidad)
+
+    fechas_ordenadas = sorted(sum_.keys())
+
+    data = {
+        "labels": [fecha.strftime("%-d/%-m") for fecha in fechas_ordenadas],
+        "values": [sum_[fecha] for fecha in fechas_ordenadas]
+    }
+
+    if len(data["labels"]) == 1:
+        data["labels"].append(data["labels"][0])
+        data["values"].append(data["values"][0])
+    print(data)
+    return jsonify(data)

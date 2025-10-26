@@ -38,6 +38,223 @@
       media="screen"
       href="{{ url_for('static', filename='css/output.css') }}"
     />
+    <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+    <script>
+      let chart1;
+      let chart2;
+
+      function formatPrice(value) {
+        let isInt = Number.isInteger(value);
+        let formatted;
+        if (isInt) {
+          formatted = value.toLocaleString("de-DE");
+        } else {
+          formatted = value.toLocaleString("de-DE", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+        }
+        return formatted.replace(/\./g, ".").replace(",", ",");
+      }
+
+      async function initChart() {
+        const stockChart1 = document
+          .getElementById("stockChart1")
+          .getContext("2d");
+        const stockChart2 = document
+          .getElementById("stockChart2")
+          .getContext("2d");
+
+        const stockChart1Container = document.getElementById(
+          "stockChart1Container",
+        );
+        const stockChart2Container = document.getElementById(
+          "stockChart2Container",
+        );
+
+        const chart1DataResponse = await fetch("/portfolio-chart-data");
+        const chart1Data = await chart1DataResponse.json();
+        stockChart1Container.classList.remove("animate-pulse", "bg-gray-200");
+        const chart2DataResponse = await fetch("/portfolio-gains-chart-data");
+        const chart2Data = await chart2DataResponse.json();
+        stockChart2Container.classList.remove("animate-pulse", "bg-gray-200");
+
+        chart1 = new Chart(stockChart1, {
+          type: "line",
+          data: {
+            labels: chart1Data.labels,
+            datasets: [
+              {
+                data: chart1Data.values,
+                borderColor: "oklch(37.2% 0.044 257.287)",
+                backgroundColor: "oklch(55.4% 0.046 257.417 / 50%)",
+                fill: true,
+                pointRadius: 0,
+                pointHoverRadius: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+              mode: "index",
+              intersect: false,
+              axis: "x",
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                enabled: true,
+                mode: "index",
+                intersect: false,
+                callbacks: {
+                  label: function (context) {
+                    return formatPrice(context.parsed.y);
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                title: { display: false },
+              },
+              y: {
+                title: { display: false },
+                ticks: {
+                  callback: function (value) {
+                    return formatPrice(value);
+                  },
+                },
+              },
+            },
+            events: [
+              "mousemove",
+              "mouseout",
+              "click",
+              "touchstart",
+              "touchmove",
+            ],
+          },
+        });
+
+        chart2 = new Chart(stockChart2, {
+          type: "line",
+          data: {
+            labels: chart2Data.labels,
+            datasets: [
+              {
+                data: chart2Data.values,
+                borderColor: "oklch(37.2% 0.044 257.287)",
+                backgroundColor: "oklch(55.4% 0.046 257.417 / 50%)",
+                fill: true,
+                pointRadius: 0,
+                pointHoverRadius: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+              mode: "index",
+              intersect: false,
+              axis: "x",
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                enabled: true,
+                mode: "index",
+                intersect: false,
+                callbacks: {
+                  label: function (context) {
+                    return formatPrice(context.parsed.y);
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                title: { display: false },
+              },
+              y: {
+                title: { display: false },
+                ticks: {
+                  callback: function (value) {
+                    return formatPrice(value);
+                  },
+                },
+              },
+            },
+            events: [
+              "mousemove",
+              "mouseout",
+              "click",
+              "touchstart",
+              "touchmove",
+            ],
+          },
+        });
+      }
+
+      if (document.startViewTransition) {
+        document
+          .startViewTransition(() => {})
+          .finished.then(() => {
+            initChart();
+          });
+      } else {
+        document.addEventListener("DOMContentLoaded", initChart);
+      }
+
+      async function updateChart(chart_id, period) {
+        let period_in_days;
+        switch (period) {
+          case "1S":
+            period_in_days = 7;
+            break;
+          case "2S":
+            period_in_days = 14;
+            break;
+          case "3S":
+            period_in_days = 21;
+            break;
+          case "1M":
+            period_in_days = 30;
+            break;
+          case "2M":
+            period_in_days = 60;
+            break;
+          case "3M":
+            period_in_days = 90;
+            break;
+          case "6M":
+            period_in_days = 180;
+            break;
+          default:
+            period_in_days = 7;
+            break;
+        }
+        if (chart_id == 1) {
+          const chart1DataResponse = await fetch(
+            "/portfolio-chart-data?d=" + period_in_days,
+          );
+          const chart1Data = await chart1DataResponse.json();
+          chart1.data.labels = chart1Data.labels;
+          chart1.data.datasets[0].data = chart1Data.values;
+          chart1.update();
+        } else if (chart_id == 2) {
+          const chart2DataResponse = await fetch(
+            "/portfolio-gains-chart-data?d=" + period_in_days,
+          );
+          const chart2Data = await chart2DataResponse.json();
+          chart2.data.labels = chart2Data.labels;
+          chart2.data.datasets[0].data = chart2Data.values;
+          chart2.update();
+        }
+      }
+    </script>
     <style>
       @view-transition {
         navigation: auto; /**/
@@ -75,7 +292,48 @@
           <h1 class="text-xl leading-none sm:text-2xl">Estadísticas</h1>
         </div>
         <div class="px-4 pb-4 lg:px-6 lg:pb-6">
-          <p>*Contenido (el gráfico de antes + el de ganancias)*</p>
+          <h2 class="mt-2 mb-4 text-lg sm:text-xl">
+            Valor total del portafolio
+          </h2>
+          <div class="flex flex-col">
+            <div
+              id="stockChart1Container"
+              class="mb-4 h-32 animate-pulse rounded-sm bg-gray-200"
+            >
+              <canvas id="stockChart1"></canvas>
+            </div>
+            <div class="overflow-x-auto">
+              <div class="mx-auto flex w-fit flex-row gap-2">
+                {% for period in ['1S', '2S', '3S', '1M', '2M', '3M', '6M'] %}
+                <button
+                  class="cursor-pointer rounded-sm bg-slate-600 px-3 py-1.5 text-sm whitespace-nowrap text-white transition active:scale-90"
+                  onclick="updateChart(1, '{{ period }}')"
+                >
+                  {{ period }}
+                </button>
+                {% endfor %}
+              </div>
+            </div>
+            <h2 class="mt-2 mb-4 text-lg sm:text-xl">Gráfica de ganancias</h2>
+            <div
+              id="stockChart2Container"
+              class="mb-4 h-32 animate-pulse rounded-sm bg-gray-200"
+            >
+              <canvas id="stockChart2"></canvas>
+            </div>
+            <div class="overflow-x-auto">
+              <div class="mx-auto flex w-fit flex-row gap-2">
+                {% for period in ['1S', '2S', '3S', '1M', '2M', '3M', '6M'] %}
+                <button
+                  class="cursor-pointer rounded-sm bg-slate-600 px-3 py-1.5 text-sm whitespace-nowrap text-white transition active:scale-90"
+                  onclick="updateChart(2, '{{ period }}')"
+                >
+                  {{ period }}
+                </button>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
