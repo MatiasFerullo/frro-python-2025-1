@@ -68,6 +68,9 @@ def check_alerta_rendimiento(alerta):
     #suma de todos los precios actuales de las acciones del usuario
     precio_actual = 0
 
+    if precio_compra == 0:
+        return
+    
     if (alerta[4] == "loss"):
         #Si la perdida es mayor o igual al umbral
         if ((precio_compra - precio_actual) / precio_compra) >= alerta[3]:
@@ -89,14 +92,14 @@ def check_alerta_precio(alerta):
 
     if (alerta[3] == "min"):
         #Si el precio actual es menor o igual al precio de la alerta
-        if precio_actual <= alerta[4]:
+        if precio_actual <= alerta[3]:
             subject = "Alerta de precio mínimo alcanzada"
             mensaje = f"El precio actual del futuro ha caído a {precio_actual}, que es menor o igual al umbral de {alerta[4]}."
             handle_alerta(alerta, subject, mensaje)
 
     else: #max
         #Si el precio actual es mayor o igual al precio de la alerta
-        if precio_actual >= alerta[4]:
+        if precio_actual >= alerta[3]:
             subject = "Alerta de precio máximo alcanzada"
             mensaje = f"El precio actual del futuro ha subido a {precio_actual}, que es mayor o igual al umbral de {alerta[4]}."
             handle_alerta(alerta, subject, mensaje)
