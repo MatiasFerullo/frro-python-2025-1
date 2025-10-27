@@ -9,12 +9,14 @@
         {% else %}
           {% set pct = 0 %}
         {% endif %}
-        <button
+        <a
+          href="/stock/{{ usuario_accion.id }}"
           class="flex w-full cursor-pointer rounded-sm p-1 transition hover:bg-gray-200 active:scale-90 active:bg-gray-200"
+          style="view-transition-name: user-stock-detail-{{ usuario_accion.id }};"
         >
           <div class="flex w-full flex-row justify-between">
             <div class="flex flex-col items-start w-full">
-              <h3 class="font-semibold">{{ usuario_accion.accion.simbolo }}</h3>
+              <h3 class="font-semibold" style="view-transition-name: user-stock-detail-title-{{ usuario_accion.id }};">{{ usuario_accion.accion.simbolo }}</h3>
               <div class="text-gray-400 flex flex-row items-center gap-1 text-left w-full overflow-hidden">
                 <div class="flex items-center gap-1 min-w-0 overflow-hidden">
                   <p class="whitespace-nowrap overflow-hidden text-ellipsis">
@@ -124,7 +126,7 @@
               </div>
             </div>
           </div>
-        </button>
+        </a>
       </div>
     {% endfor %}
   {% elif view == "edit" %}

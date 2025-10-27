@@ -109,17 +109,26 @@ def listar_acciones():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
-def get_first_prices(user):
+
+def get_first_price(usuario_accion):
     from flaskr.models import Precio_accion
+
+    return Precio_accion.query.filter(
+        Precio_accion.accion_id == usuario_accion.accion_id,
+        func.date(Precio_accion.fecha_hora) <= usuario_accion.fecha
+    ).order_by(Precio_accion.fecha_hora.desc()).first()
+
+def get_latest_price(usuario_accion):
+    from flaskr.models import Precio_accion
+
+    return Precio_accion.query.filter_by(accion_id=usuario_accion.accion_id).order_by(Precio_accion.fecha_hora.desc()).first()
+
+def get_first_prices(user):
     first_prices = {}
 
     for usuario_accion in user.usuario_acciones:
 
-        first_price_record = Precio_accion.query.filter(
-            Precio_accion.accion_id == usuario_accion.accion_id,
-            func.date(Precio_accion.fecha_hora) <= usuario_accion.fecha
-        ).order_by(Precio_accion.fecha_hora.desc()).first()
+        first_price_record = get_first_price(usuario_accion)
 
         if first_price_record:
             first_prices[usuario_accion.id] = first_price_record.precio
@@ -128,11 +137,10 @@ def get_first_prices(user):
     return first_prices
 
 def get_latest_prices(user):
-    from flaskr.models import Precio_accion
     latest_prices = {}
 
     for usuario_accion in user.usuario_acciones:
-        latest_price_record = Precio_accion.query.filter_by(accion_id=usuario_accion.accion_id).order_by(Precio_accion.fecha_hora.desc()).first()
+        latest_price_record = get_latest_price(usuario_accion)
         if latest_price_record:
             latest_prices[usuario_accion.id] = latest_price_record.precio
         else:
@@ -340,7 +348,7 @@ def portfolio_chart_data():
             if precio.fecha_hora.date() >= date_limit:
                 if precio.fecha_hora.date() >= usuario_accion.fecha:
                     fecha = precio.fecha_hora.date()
-                    sum_[fecha] += (precio.precio * usuario_accion.cantidad)
+                    sum_[fecha] += round(precio.precio * usuario_accion.cantidad, 2)
 
     fechas_ordenadas = sorted(sum_.keys())
 
@@ -368,7 +376,7 @@ def portfolio_composition_chart_data():
     values = []
     for usuario_accion in user.usuario_acciones:
         labels.append(usuario_accion.accion.simbolo)
-        latest_price_record = Precio_accion.query.filter_by(accion_id=usuario_accion.accion_id).order_by(Precio_accion.fecha_hora.desc()).first()
+        latest_price_record = get_latest_price(usuario_accion)
         if latest_price_record:
             values.append(usuario_accion.cantidad * latest_price_record.precio)
         else:
@@ -410,15 +418,12 @@ def portfolio_gains_chart_data():
     sum_ = defaultdict(float)
     for usuario_accion in usuario_acciones:
         precios = Precio_accion.query.filter_by(accion_id=usuario_accion.accion_id).order_by(func.date(Precio_accion.fecha_hora).desc())
+        precio_compra = get_latest_price(usuario_accion).precio
         for precio in precios:
             if precio.fecha_hora.date() >= date_limit:
                 if precio.fecha_hora.date() >= usuario_accion.fecha:
                     fecha = precio.fecha_hora.date()
-                    precio_compra = Precio_accion.query.filter(
-                        Precio_accion.accion_id == usuario_accion.accion_id,
-                        func.date(Precio_accion.fecha_hora) <= usuario_accion.fecha
-                    ).order_by(Precio_accion.fecha_hora.desc()).first().precio
-                    sum_[fecha] += ((precio.precio - precio_compra) * usuario_accion.cantidad)
+                    sum_[fecha] += round((precio.precio - precio_compra) * usuario_accion.cantidad, 2)
 
     fechas_ordenadas = sorted(sum_.keys())
 
@@ -431,4 +436,95 @@ def portfolio_gains_chart_data():
         data["labels"].append(data["labels"][0])
         data["values"].append(data["values"][0])
     print(data)
+    return jsonify(data)
+
+@futuros_bp.route('/stock/<int:usuario_accion_id>', methods=['GET'])
+def stock_details(usuario_accion_id):
+    if 'user_id' not in session:
+        return redirect(url_for('index.index'))
+
+    from flaskr.models import UsuarioAccion
+
+    usuario_accion = UsuarioAccion.query.filter_by(id=usuario_accion_id).first()
+    if not usuario_accion:
+        return jsonify({'error': 'Acción no encontrada'}), 404
+    if usuario_accion.user_id != session['user_id']:
+        return jsonify({'error': 'No autorizado'}), 403
+
+    purchase_price = get_first_price(usuario_accion).precio
+    current_price = get_latest_price(usuario_accion).precio
+
+    return render_template('user-stock.html', usuario_accion=usuario_accion, purchase_price=purchase_price, current_price=current_price)
+
+@futuros_bp.route('/user-stock-gains-chart-data/<int:usuario_accion_id>', methods=['GET'])
+def user_stock_gains_chart_data(usuario_accion_id):
+    if 'user_id' not in session:
+        return redirect(url_for('index.index'))
+    user_id = session['user_id']
+
+    days = request.args.get('d')
+    if not days or days not in ["7", "14", "21", "30", "60", "90", "180"]:
+        days = "7"
+
+    date_limit = date.today() - timedelta(days=int(days))
+
+    from flaskr.models import Precio_accion, UsuarioAccion
+
+    usuario_accion = UsuarioAccion.query.filter_by(id=usuario_accion_id).first()
+    if not usuario_accion:
+        return jsonify({'error': 'Acción no encontrada'}), 404
+    if usuario_accion.user_id != user_id:
+        return jsonify({'error': 'No autorizado'}), 403
+
+    sum_ = defaultdict(float)
+    precios = Precio_accion.query.filter_by(accion_id=usuario_accion.accion_id).order_by(func.date(Precio_accion.fecha_hora).desc())
+    precio_compra = get_latest_price(usuario_accion).precio
+    for precio in precios:
+        if precio.fecha_hora.date() >= date_limit:
+            if precio.fecha_hora.date() >= usuario_accion.fecha:
+                fecha = precio.fecha_hora.date()
+                sum_[fecha] += round((precio.precio - precio_compra) * usuario_accion.cantidad, 2)
+
+    fechas_ordenadas = sorted(sum_.keys())
+
+    data = {
+        "labels": [fecha.strftime("%-d/%-m") for fecha in fechas_ordenadas],
+        "values": [sum_[fecha] for fecha in fechas_ordenadas]
+    }
+
+    if len(data["labels"]) == 1:
+        data["labels"].append(data["labels"][0])
+        data["values"].append(data["values"][0])
+    return jsonify(data)
+
+@futuros_bp.route('/stock-chart-data/<int:accion_id>', methods=['GET'])
+def stock_chart_data(accion_id):
+    if 'user_id' not in session:
+        return redirect(url_for('index.index'))
+
+    days = request.args.get('d')
+    if not days or days not in ["7", "14", "21", "30", "60", "90", "180"]:
+        days = "7"
+
+    date_limit = date.today() - timedelta(days=int(days))
+
+    from flaskr.models import Precio_accion
+
+    sum_ = defaultdict(float)
+
+    precios = Precio_accion.query.filter_by(accion_id=accion_id).order_by(func.date(Precio_accion.fecha_hora).desc())
+    for precio in precios:
+        if precio.fecha_hora.date() >= date_limit:
+            sum_[precio.fecha_hora.date()] += round(precio.precio, 2)
+
+    fechas_ordenadas = sorted(sum_.keys())
+
+    data = {
+        "labels": [fecha.strftime("%-d/%-m") for fecha in fechas_ordenadas],
+        "values": [sum_[fecha] for fecha in fechas_ordenadas]
+    }
+
+    if len(data["labels"]) == 1:
+        data["labels"].append(data["labels"][0])
+        data["values"].append(data["values"][0])
     return jsonify(data)
