@@ -173,13 +173,11 @@ def add_stock_to_portfolio():
     if not accion:
         return jsonify({'error': 'Acción no encontrada'}), 404
 
-    # TODO: Quitar precio_compra de la DB
     nueva_usuario_accion = UsuarioAccion(
         user_id=user_id,
         accion_id=accion_id,
         fecha=fecha,
-        cantidad=cantidad,
-        precio_compra=1
+        cantidad=cantidad
     )
 
     try:

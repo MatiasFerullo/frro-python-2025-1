@@ -46,8 +46,7 @@ class UsuarioAccion(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("usuario.id"))
     accion_id = db.Column(db.Integer, db.ForeignKey("accion.id"))
     fecha = db.Column(db.Date)
-    cantidad = db.Column(db.Float, nullable=False)
-    precio_compra = db.Column(db.Float, nullable=False)
+    cantidad = db.Column(db.Integer, nullable=False)
 
     user = db.relationship("Usuario", back_populates="usuario_acciones")
     accion = db.relationship("Accion", back_populates="usuario_acciones")
