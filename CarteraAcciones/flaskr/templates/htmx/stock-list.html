@@ -83,11 +83,11 @@
               >
                 <p class="font-semibold">
                   {% if pct > 0 %}
-                    +{{ pct|round(2) }}%
+                    +{{ pct|round(2)|format_price }}%
                   {% elif pct < 0 %}
-                    {{ pct|round(2) }}%
+                    {{ pct|round(2)|format_price }}%
                   {% else %}
-                    {{ pct|round(2) }}%
+                    0%
                   {% endif %}
                 </p>
                 {% if pct > 0 %}

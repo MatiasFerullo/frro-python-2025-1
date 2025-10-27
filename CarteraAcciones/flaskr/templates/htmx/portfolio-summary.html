@@ -20,11 +20,11 @@
       {% endif %}
     >
       {% if differencePercentage > 0 %}
-        <p class="font-semibold">+{{ differencePercentage | abs }}%</p>
+        <p class="font-semibold">+{{ differencePercentage | abs | format_price }}%</p>
       {% elif differencePercentage < 0 %}
-        <p class="font-semibold">-{{ differencePercentage | abs }}%</p>
+        <p class="font-semibold">-{{ differencePercentage | abs | format_price }}%</p>
       {% else %}
-        <p class="font-semibold">{{ differencePercentage | abs }}%</p>
+        <p class="font-semibold">0%</p>
       {% endif %}
       {% if differencePercentage > 0 %}
         <svg
