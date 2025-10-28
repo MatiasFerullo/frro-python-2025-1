@@ -416,7 +416,7 @@ def portfolio_gains_chart_data():
     sum_ = defaultdict(float)
     for usuario_accion in usuario_acciones:
         precios = Precio_accion.query.filter_by(accion_id=usuario_accion.accion_id).order_by(func.date(Precio_accion.fecha_hora).desc())
-        precio_compra = get_latest_price(usuario_accion).precio
+        precio_compra = get_first_price(usuario_accion).precio
         for precio in precios:
             if precio.fecha_hora.date() >= date_limit:
                 if precio.fecha_hora.date() >= usuario_accion.fecha:
