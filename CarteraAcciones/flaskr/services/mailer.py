@@ -1,4 +1,4 @@
-#!/var/www/frro-python-2025-1/CarteraAcciones/venv/bin/python
+#!/venv/bin/python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -9,19 +9,12 @@ import datetime
 import logging
 from logging.handlers import RotatingFileHandler
 import traceback
+from dotenv import load_dotenv
 
+load_dotenv()
 
 ## FALTA INTEGRAR CON LA BASE DE DATOS DE SQLALCHEMY
 
-LOG_FILE = "mailer_log.txt"
-os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
-
-logger = logging.getLogger("alertas_logger")
-logger.setLevel(logging.INFO)
-
-
-
-logger.info("==== Iniciando ejecución del mailer ====")
 
 app = Flask(__name__) #Usa el mail service de flask
 
@@ -37,7 +30,7 @@ mail = Mail(app)
 
 # Configuración de la conexión
 conexion = pymysql.connect(
-    host="200.58.107.248",        
+    host="localhost",        
     user= os.environ.get('DB_USER'),
     password= os.environ.get('DB_PASSWORD'),
     database="acciones",
@@ -165,5 +158,14 @@ def handle_alerta(alerta, subject, mensaje):
 
 
 if __name__ == "__main__": 
-    
+    LOG_FILE = "./mailer_log.txt"
+    os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
+
+    logger = logging.getLogger("alertas_logger")
+    logger.setLevel(logging.INFO)
+
+
+
+    logger.info("==== Iniciando ejecución del mailer ====")
+
     main()
