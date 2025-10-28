@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+from dotenv import load_dotenv
+import os
 from flask import Flask
 from flask_mail import Mail, Message
 import pymysql
@@ -6,23 +9,23 @@ import datetime
 
 ## FALTA INTEGRAR CON LA BASE DE DATOS DE SQLALCHEMY
 
-app = Flask(__name__) #Usa el mail saervice de flask
+app = Flask(__name__) #Usa el mail service de flask
 
 # Configuración de Gmail SMTP
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = ' tpjava78@gmail.com'
-app.config['MAIL_PASSWORD'] = 'ldbq migq nmjb rmsg' 
-app.config['MAIL_DEFAULT_SENDER'] = ('Cartera de futuros', 'tpjava78@gmail.com')
+app.config['MAIL_USERNAME'] = os.environ.get('SMTP_MAIL')  
+app.config['MAIL_PASSWORD'] = os.environ.get('SMTP_TOKEN') 
+app.config['MAIL_DEFAULT_SENDER'] = ('Cartera de futuros', os.environ.get('SMTP_MAIL'))
 
 mail = Mail(app)
 
 # Configuración de la conexión
 conexion = pymysql.connect(
     host="200.58.107.248",        
-    user="flaskuser",
-    password="flaskpass",
+    user= os.environ.get('DB_USER'),
+    password= os.environ.get('DB_PASSWORD'),
     database="acciones",
     port=3306                # Puerto por defecto de MySQL
 )
