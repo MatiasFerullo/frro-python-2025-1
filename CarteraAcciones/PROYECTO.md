@@ -10,10 +10,12 @@ A través de una interfaz intuitiva, el usuario puede visualizar la evolución d
 
 Esta solución está orientada a inversionistas individuales que deseen centralizar el seguimiento de sus activos de forma práctica, segura y accesible.
 
+## Diagrama Entidad Relación
+<img width="741" height="486" alt="CarteraFuturos" src="https://github.com/user-attachments/assets/ceb63486-2111-4bab-8298-f90bcf3d0eb4" />
+
 ## Sistema de Alertas Personalizadas
 El usuario cuenta con un sistema de alertas configurables por:
-- Precio mínimo/máximo de una acción.  
-- Pérdida o ganancia mayor a cierto porcentaje.  
+- Precio mínimo/máximo de una acción. 
 - Cambios súbitos en el valor total del portafolio.  
 
 ## Requerimientos Funcionales
@@ -55,24 +57,21 @@ El usuario debe poder visualizar un resumen detallado del portafolio, incluyendo
 #### 2.4 Edición de Acciones  
 - El usuario debe poder editar la cantidad de acciones, el precio de compra o eliminar acciones del portafolio.
 
-#### 2.5 Eliminación de Portafolio  
-- El usuario debe poder eliminar un portafolio completo y todas sus acciones asociadas.
-
 ### 3. Alertas Personalizadas
 
 #### 3.1 Alertas por Precio Mínimo/Máximo  
 - El usuario debe poder establecer alertas para notificar cuando el precio de una acción alcance un valor mínimo o máximo definido.
 
-#### 3.3 Alertas por Cambios Súbitos  
+#### 3.2 Alertas por Cambios Súbitos  
 - El sistema debe permitir configurar alertas para notificar cambios importantes en el valor total del portafolio, basados en un umbral de variación predefinido.
 
-#### 3.4 Notificaciones de Alertas  
+#### 3.3 Notificaciones de Alertas  
 - Las alertas deben enviarse al correo electrónico del usuario y/o mostrarse dentro de la interfaz de usuario como notificaciones en tiempo real.
 
 ## Stack Tecnológico
 
 ### Base de Datos  
-Se usará SQLite debido a su simplicidad y rendimiento aceptable.
+Se usará MySQL debido a su simplicidad y rendimiento aceptable.
 
 ### Framework  
 Se usará Flask, considerado un microframework que brinda las funcionalidades necesarias para el proyecto.
