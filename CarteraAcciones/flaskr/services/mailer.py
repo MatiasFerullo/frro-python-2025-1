@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 from dotenv import load_dotenv
 import os
@@ -6,8 +7,22 @@ from flask import Flask
 from flask_mail import Mail, Message
 import pymysql
 import datetime
+import logging
+from logging.handlers import RotatingFileHandler
+import traceback
+
 
 ## FALTA INTEGRAR CON LA BASE DE DATOS DE SQLALCHEMY
+
+LOG_FILE = "mailer_log.txt"
+os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
+
+logger = logging.getLogger("alertas_logger")
+logger.setLevel(logging.INFO)
+
+
+
+logger.info("==== Iniciando ejecución del mailer ====")
 
 app = Flask(__name__) #Usa el mail service de flask
 
@@ -37,7 +52,7 @@ def main():
             cursor.execute("SELECT * from alerta_precio;")
             alertas_precios = cursor.fetchall()
             
-            print("Alertas de precio:", alertas_precios)
+            logger.info(f"Alertas de precio: {len(alertas_precios)} encontradas")
 
             #Checkear una por una si se deberia activar
             for alerta in alertas_precios:
@@ -46,7 +61,7 @@ def main():
             cursor.execute("SELECT * from alerta_rendimiento;")
             alertas_rendimientos = cursor.fetchall()
 
-            print("Alertas de rendimiento:", alertas_rendimientos)
+            logger.info(f"Alertas de rendimiento: {len(alertas_rendimientos)} encontradas")
 
             for alerta in alertas_rendimientos:
                 check_alerta_rendimiento(alerta)
@@ -54,13 +69,15 @@ def main():
             cursor.execute("SELECT * from alerta_portafolio;")
             alertas_portafolios = cursor.fetchall()
 
-            print("Alertas de portafolio:", alertas_portafolios)
+            logger.info(f"Alertas de portafolio: {len(alertas_portafolios)} encontradas")
 
             for alerta in alertas_portafolios:
                 check_alerta_portafolio(alerta)
 
     finally:
         conexion.close()
+        logger.info("Conexión cerrada.")
+        logger.info("==== Fin de ejecución del mailer ====")
 
 
 #En los 3, comparar los valores actuales y los valores de las fechas de compra con las condiciones de las alertas
@@ -135,13 +152,16 @@ def handle_alerta(alerta, subject, mensaje):
 
 
     with app.app_context():
-        msg = Message(
-            subject="Alerta de Cartera de Futuros - " + subject, 
-            recipients=["matias.ferullo1@gmail.com"], #Cambiar por el mail del usuario
-            body="Este es un correo enviado por Cartera de Futuros.\n\n" + mensaje
-        )
-        mail.send(msg)
-        print("Correo enviado correctamente.")
+        try:
+            msg = Message(
+                subject="Alerta de Cartera de Futuros - " + subject, 
+                recipients=["matias.ferullo1@gmail.com"], #Cambiar por el mail del usuario
+                body="Este es un correo enviado por Cartera de Futuros.\n\n" + mensaje
+            )
+            mail.send(msg)
+            logger.info(f"Correo enviado correctamente a {mail_usuario}")
+        except Exception as e:
+            logger.error(f"Error al enviar correo a {mail_usuario}: {e}\n{traceback.format_exc()}")
 
 
 
