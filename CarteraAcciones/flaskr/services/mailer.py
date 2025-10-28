@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
+#!/var/www/frro-python-2025-1/CarteraAcciones/venv/bin/python
 # -*- coding: utf-8 -*-
 
-from dotenv import load_dotenv
 import os
 from flask import Flask
 from flask_mail import Mail, Message
