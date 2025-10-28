@@ -11,7 +11,7 @@ A través de una interfaz intuitiva, el usuario puede visualizar la evolución d
 Esta solución está orientada a inversionistas individuales que deseen centralizar el seguimiento de sus activos de forma práctica, segura y accesible.
 
 ## Diagrama Entidad Relación
-<img width="741" height="486" alt="CarteraFuturos" src="https://github.com/user-attachments/assets/ceb63486-2111-4bab-8298-f90bcf3d0eb4" />
+<img width="741" height="486" alt="CarteraFuturos" src="https://github.com/user-attachments/assets/9ce916e0-7789-473e-8c00-550e0a7a09fd" />
 
 ## Sistema de Alertas Personalizadas
 El usuario cuenta con un sistema de alertas configurables por:
