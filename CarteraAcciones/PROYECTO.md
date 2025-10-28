@@ -1,11 +1,11 @@
-# Cartera de Acciones con PyRofex
+# Cartera de Futuros con PyRofex
 
 ## Descripción
-El proyecto consiste en el desarrollo de una aplicación web que permite a los usuarios gestionar y realizar un seguimiento personalizado de su portafolio de inversiones en acciones.  
+El proyecto consiste en el desarrollo de una aplicación web que permite a los usuarios gestionar y realizar un seguimiento personalizado de su portafolio de inversiones en futuros.  
 La plataforma ofrece la funcionalidad de registrar y almacenar la composición del portafolio dentro de la sesión del usuario, permitiendo el acceso posterior a dicha información en cualquier momento.
 
 ## Objetivo
-El sistema proporciona un resumen detallado del rendimiento de las inversiones, tanto a nivel general (portafolio completo) como individual (por acción específica), facilitando así el análisis y la toma de decisiones informadas.  
+El sistema proporciona un resumen detallado del rendimiento de las inversiones, tanto a nivel general (portafolio completo) como individual (por futuro específico), facilitando así el análisis y la toma de decisiones informadas.  
 A través de una interfaz intuitiva, el usuario puede visualizar la evolución de su portafolio, identificar tendencias y evaluar el comportamiento de sus activos a lo largo del tiempo.
 
 Esta solución está orientada a inversionistas individuales que deseen centralizar el seguimiento de sus activos de forma práctica, segura y accesible.
@@ -15,7 +15,7 @@ Esta solución está orientada a inversionistas individuales que deseen centrali
 
 ## Sistema de Alertas Personalizadas
 El usuario cuenta con un sistema de alertas configurables por:
-- Precio mínimo/máximo de una acción. 
+- Precio mínimo/máximo de un futuro. 
 - Cambios súbitos en el valor total del portafolio.  
 
 ## Requerimientos Funcionales
@@ -41,10 +41,10 @@ El usuario cuenta con un sistema de alertas configurables por:
 #### 2.1 Creación de Portafolio  
 - El usuario debe poder crear un portafolio personalizado para gestionar sus inversiones.
 
-#### 2.2 Adición de Acciones  
-El usuario debe poder agregar acciones a su portafolio, incluyendo:  
-- Nombre de la acción (ticker).  
-- Cantidad de acciones adquiridas.  
+#### 2.2 Adición de Futuros  
+El usuario debe poder agregar futuros a su portafolio, incluyendo:  
+- Nombre del futuro (ticker).  
+- Cantidad de futuros adquiridos.  
 - Fecha de adquisición.
 
 #### 2.3 Visualización del Portafolio  
@@ -52,15 +52,15 @@ El usuario debe poder visualizar un resumen detallado del portafolio, incluyendo
 - Total invertido.  
 - Valor actual del portafolio.  
 - Rentabilidad total (porcentaje de ganancia o pérdida).  
-- Rentabilidad por acción (para cada activo individual).
+- Rentabilidad por futuro (para cada activo individual).
 
-#### 2.4 Edición de Acciones  
-- El usuario debe poder editar la cantidad de acciones, el precio de compra o eliminar acciones del portafolio.
+#### 2.4 Edición de futuros  
+- El usuario debe poder editar la cantidad de futuros, el precio de compra o eliminar futuros del portafolio.
 
 ### 3. Alertas Personalizadas
 
 #### 3.1 Alertas por Precio Mínimo/Máximo  
-- El usuario debe poder establecer alertas para notificar cuando el precio de una acción alcance un valor mínimo o máximo definido.
+- El usuario debe poder establecer alertas para notificar cuando el precio de un futuro alcance un valor mínimo o máximo definido.
 
 #### 3.2 Alertas por Cambios Súbitos  
 - El sistema debe permitir configurar alertas para notificar cambios importantes en el valor total del portafolio, basados en un umbral de variación predefinido.
