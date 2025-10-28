@@ -13,7 +13,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-## FALTA INTEGRAR CON LA BASE DE DATOS DE SQLALCHEMY
 
 
 app = Flask(__name__) #Usa el mail service de flask
@@ -23,14 +22,14 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = os.environ.get('SMTP_MAIL')  
-app.config['MAIL_PASSWORD'] = os.environ.get('SMTP_TOKEN') 
+app.config['MAIL_PASSWORD'] =  os.environ.get('SMTP_TOKEN') 
 app.config['MAIL_DEFAULT_SENDER'] = ('Cartera de futuros', os.environ.get('SMTP_MAIL'))
 
 mail = Mail(app)
 
 # Configuración de la conexión
 conexion = pymysql.connect(
-    host="localhost",        
+    host= "localhost",   
     user= os.environ.get('DB_USER'),
     password= os.environ.get('DB_PASSWORD'),
     database="acciones",
@@ -44,21 +43,24 @@ def main():
             cursor.execute("SELECT * from alerta_precio;")
             alertas_precios = cursor.fetchall()
             
+
+
+            cursor.execute("SELECT * FROM usuario;")
+            print("Usuarios:", cursor.fetchall())
+            cursor.execute("SELECT * from alerta")
+            print("Alertas:", cursor.fetchall())
+
+            cursor.execute("SELECT * FROM precio_accion WHERE DATE(fecha_hora) = \"2025-10-27\";")
+            print("Precios acción 3:", cursor.fetchall())
+
             logger.info(f"Alertas de precio: {len(alertas_precios)} encontradas")
 
             #Checkear una por una si se deberia activar
             for alerta in alertas_precios:
                 check_alerta_precio(alerta)
-
-            cursor.execute("SELECT * from alerta_rendimiento;")
-            alertas_rendimientos = cursor.fetchall()
-
-            logger.info(f"Alertas de rendimiento: {len(alertas_rendimientos)} encontradas")
-
-            for alerta in alertas_rendimientos:
-                check_alerta_rendimiento(alerta)
             
             cursor.execute("SELECT * from alerta_portafolio;")
+            
             alertas_portafolios = cursor.fetchall()
 
             logger.info(f"Alertas de portafolio: {len(alertas_portafolios)} encontradas")
@@ -66,62 +68,62 @@ def main():
             for alerta in alertas_portafolios:
                 check_alerta_portafolio(alerta)
 
+            
+
     finally:
         conexion.close()
         logger.info("Conexión cerrada.")
         logger.info("==== Fin de ejecución del mailer ====")
 
 
-#En los 3, comparar los valores actuales y los valores de las fechas de compra con las condiciones de las alertas
 
-def check_alerta_rendimiento(alerta):
-    #Suma de todos los precios de compra de las acciones del usuario
-    precio_compra = 0
-    #suma de todos los precios actuales de las acciones del usuario
-    precio_actual = 0
+def get_precio_accion(id_accion, fecha_hora):
+    with conexion.cursor() as cursor:
+        cursor.execute(f"SELECT precio FROM precio_accion WHERE accion_id = {id_accion} AND fecha_hora <= '{fecha_hora}' ORDER BY fecha_hora DESC LIMIT 1;")
+        
+        return cursor.fetchone()[0]
 
-    if precio_compra == 0:
-        return
-    
-    if (alerta[4] == "loss"):
-        #Si la perdida es mayor o igual al umbral
-        if ((precio_compra - precio_actual) / precio_compra) >= alerta[3]:
-            subject = "Rendimiento negativo del portafolio superó el umbral"
-            mensaje = f"La pérdida actual de su portafolio es {(precio_compra - precio_actual) / precio_compra * 100:.2f}% que supera el umbral de {alerta[3] * 100:.2f}%."
-            handle_alerta(alerta, subject, mensaje)
-    else: #gain
-        #Si la ganancia es mayor o igual al umbral
-        if ((precio_actual - precio_compra) / precio_compra) >= alerta[3]:
-            subject = "Rendimiento positivo del portafolio superó el umbral"
-            mensaje = f"La ganancia actual de su portafolio es {(precio_actual - precio_compra) / precio_compra * 100:.2f}% que supera el umbral de {alerta[3] * 100:.2f}%."
-            handle_alerta(alerta, subject, mensaje)
-
-    
+def get_precio_actual_futuro(id_accion):
+    with conexion.cursor() as cursor:
+        cursor.execute(f"SELECT precio FROM precio_accion WHERE accion_id = {id_accion} ORDER BY fecha_hora DESC LIMIT 1;")
+        
+        return cursor.fetchone()[0]
 
 def check_alerta_precio(alerta):
     #Precio actual del futuro
-    precio_actual = 0
+    precio_actual = get_precio_actual_futuro(alerta[1])
 
-    if (alerta[3] == "min"):
+    if (alerta[2] == "min"):
         #Si el precio actual es menor o igual al precio de la alerta
         if precio_actual <= alerta[3]:
             subject = "Alerta de precio mínimo alcanzada"
-            mensaje = f"El precio actual del futuro ha caído a {precio_actual}, que es menor o igual al umbral de {alerta[4]}."
+            mensaje = f"El precio actual del futuro ha caído a {precio_actual}, que es menor o igual al umbral de {alerta[3]}."
             handle_alerta(alerta, subject, mensaje)
 
     else: #max
         #Si el precio actual es mayor o igual al precio de la alerta
         if precio_actual >= alerta[3]:
             subject = "Alerta de precio máximo alcanzada"
-            mensaje = f"El precio actual del futuro ha subido a {precio_actual}, que es mayor o igual al umbral de {alerta[4]}."
+            mensaje = f"El precio actual del futuro ha subido a {precio_actual}, que es mayor o igual al umbral de {alerta[3]}."
             handle_alerta(alerta, subject, mensaje)
 
 
 def check_alerta_portafolio(alerta):
+    #Obtener todos los futuros del portafolio del usuario
+    with conexion.cursor() as cursor:
+        cursor.execute(f"SELECT * FROM usuario_accion RIGHT JOIN alerta ON alerta.user_id = usuario_accion.user_id WHERE alerta.id = {alerta[0]};")
+        futuros_portafolio = cursor.fetchall()
+
     #Suma de todos los precios actuales de las acciones del usuario
     valor_actual = 0
+    for futuro in futuros_portafolio:
+        valor_actual += get_precio_actual_futuro(futuro[2]) * futuro[4]
+
     #Suma de todos los precios de compra de las acciones del usuario
     valor_compra = 0
+    for futuro in futuros_portafolio:
+        valor_compra += get_precio_accion(futuro[2], futuro[3]) * futuro[4]
+    print("Valor compra:", valor_compra)
 
     if (valor_compra == 0):
         return
@@ -138,9 +140,9 @@ def handle_alerta(alerta, subject, mensaje):
     with conexion.cursor() as cursor:
 
         #Obtener el mail del usuario
-        cursor.execute(f"SELECT email FROM usuario WHERE id = {alerta[1]};")
+        cursor.execute(f"SELECT email FROM usuario RIGHT JOIN alerta ON alerta.id = {alerta[0]} WHERE usuario.id = alerta.user_id;")
         mail_usuario = cursor.fetchone()
-        print("Mail del usuario:", mail_usuario[0][0]) #Lista en una lista
+        print("Mail del usuario:", mail_usuario[0])
 
 
     with app.app_context():
@@ -150,7 +152,7 @@ def handle_alerta(alerta, subject, mensaje):
                 recipients=["matias.ferullo1@gmail.com"], #Cambiar por el mail del usuario
                 body="Este es un correo enviado por Cartera de Futuros.\n\n" + mensaje
             )
-            mail.send(msg)
+            #mail.send(msg)
             logger.info(f"Correo enviado correctamente a {mail_usuario}")
         except Exception as e:
             logger.error(f"Error al enviar correo a {mail_usuario}: {e}\n{traceback.format_exc()}")
@@ -158,11 +160,9 @@ def handle_alerta(alerta, subject, mensaje):
 
 
 if __name__ == "__main__": 
-    LOG_FILE = "./mailer_log.txt"
-    os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
+    logging.basicConfig(filename="app.log", level=logging.INFO)
 
     logger = logging.getLogger("alertas_logger")
-    logger.setLevel(logging.INFO)
 
 
 
