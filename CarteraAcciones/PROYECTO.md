@@ -37,14 +37,12 @@ El usuario cuenta con un sistema de alertas configurables por:
 ### 2. Gestión de Portafolio de Inversiones
 
 #### 2.1 Creación de Portafolio  
-- El usuario debe poder crear un portafolio personalizado para gestionar sus inversiones.  
-- El sistema debe permitir asignar un nombre al portafolio.
+- El usuario debe poder crear un portafolio personalizado para gestionar sus inversiones.
 
 #### 2.2 Adición de Acciones  
 El usuario debe poder agregar acciones a su portafolio, incluyendo:  
 - Nombre de la acción (ticker).  
 - Cantidad de acciones adquiridas.  
-- Precio de compra por acción.  
 - Fecha de adquisición.
 
 #### 2.3 Visualización del Portafolio  
@@ -64,9 +62,6 @@ El usuario debe poder visualizar un resumen detallado del portafolio, incluyendo
 
 #### 3.1 Alertas por Precio Mínimo/Máximo  
 - El usuario debe poder establecer alertas para notificar cuando el precio de una acción alcance un valor mínimo o máximo definido.
-
-#### 3.2 Alertas por Pérdida o Ganancia  
-- El usuario debe poder configurar alertas para ser notificado cuando una acción o el portafolio en general tenga una ganancia o pérdida superior a un porcentaje específico.
 
 #### 3.3 Alertas por Cambios Súbitos  
 - El sistema debe permitir configurar alertas para notificar cambios importantes en el valor total del portafolio, basados en un umbral de variación predefinido.
