@@ -298,23 +298,29 @@ def get_portfolio_summary():
         return htmx_redirect(url_for('index.index'))
     
     user_id = session['user_id']
-    from flaskr.models import Usuario, Precio_accion
+    from flaskr.models import Usuario, Precio_accion, UsuarioAccion
     user = Usuario.query.filter_by(id=user_id).first()
 
     gain_sum = 0.0
     initial_investment = 0.0
+    last_user_investment = UsuarioAccion.query.filter_by(user_id=user_id).order_by(UsuarioAccion.fecha.desc()).first()
+    reference_date = None
+    if last_user_investment:
+        reference_date = last_user_investment.fecha
+    
     for usuario_accion in user.usuario_acciones:
         accion_id = usuario_accion.accion_id
         latest_price_record = Precio_accion.query.filter_by(accion_id=accion_id).order_by(Precio_accion.fecha_hora.desc()).first()
         if latest_price_record:
             latest_price = latest_price_record.precio
             gain_sum += (usuario_accion.cantidad * latest_price)
-        first_price_record = Precio_accion.query.filter(
-            Precio_accion.accion_id == usuario_accion.accion_id,
-            func.date(Precio_accion.fecha_hora) <= usuario_accion.fecha
-        ).order_by(Precio_accion.fecha_hora.desc()).first()
-        if first_price_record:
-            initial_investment += (usuario_accion.cantidad * first_price_record.precio)
+        if reference_date:
+            initial_price_record = Precio_accion.query.filter(
+                Precio_accion.accion_id == usuario_accion.accion_id,
+                func.date(Precio_accion.fecha_hora) <= reference_date
+            ).order_by(Precio_accion.fecha_hora.desc()).first()
+            if initial_price_record:
+                initial_investment += (usuario_accion.cantidad * initial_price_record.precio)
 
     difference = gain_sum - initial_investment
     differencePercentage = 0.0
@@ -476,7 +482,7 @@ def user_stock_gains_chart_data(usuario_accion_id):
 
     sum_ = defaultdict(float)
     precios = Precio_accion.query.filter_by(accion_id=usuario_accion.accion_id).order_by(func.date(Precio_accion.fecha_hora).desc())
-    precio_compra = get_latest_price(usuario_accion).precio
+    precio_compra = get_first_price(usuario_accion).precio
     for precio in precios:
         if precio.fecha_hora.date() >= date_limit:
             if precio.fecha_hora.date() >= usuario_accion.fecha:
